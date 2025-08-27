@@ -1,0 +1,151 @@
+
+E-Commerce App Roadmap
+ ✅Already Completed:
+
+✅Orders: Create + Display
+
+✅ Admin: Update order status
+
+✅Auth: Basic user login/register
+
+🔥 Next Steps (Core Must-Haves)
+
+✅Product Management (Admin)
+
+✅Add/Edit/Delete products in the backend (with Sequelize).
+
+✅Simple admin page in React to manage products.
+
+✅Show product list on the frontend with images, prices, stock.
+
+✅Cart System (User)
+
+✅ Add to cart button on product cards.
+
+✅ Cart page: increase/decrease qty, remove item.
+ 
+✅ Save cart in DB (linked to userId) OR localStorage for guests.
+
+✅ Checkout + Orders (User)
+
+✅ Checkout page: select shipping address + confirm order.
+
+ ✅ Place order → redirect to Orders page.
+
+✅ Reduce stock when an order is placed.
+
+⚡ Medium Priority (Good UX)
+
+User Profile
+
+Edit name/email/password.
+
+✅ View order history (reuse OrdersPage but scoped to logged-in user).
+
+✅ Manage shipping address.
+
+✅ Payment Integration
+
+✅ Start with Cash on Delivery (COD).
+
+Then add Stripe/PayPal (optional, but nice).
+
+⭐ Advanced / Optional Features
+
+Reviews & Ratings
+
+✅ Users leave product reviews.
+
+Display average rating on product page.
+
+✅ Admin Dashboard
+
+✅ Show revenue, sales stats, orders by status.
+
+✅ Low-stock alerts.
+
+Email Notifications
+
+Send email when order placed / status updated.
+
+📌 Suggested Build Order
+
+✅ Products (Admin CRUD + User view)
+
+✅ Cart (Add/Update/Delete)
+
+Checkout + Order placement
+
+User Profile + Order History
+
+Payments (COD first, Stripe later)
+
+Reviews & Dashboard (optional extras)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Remaining action:
+
+Profile page (edit name, email, password).
+
+View order history.
+
+Shipping address management.
+
+update items in cart.
+Checkout page (select address, payment option, confirm order).
+
+Order summary before placing order.
+
+
+4. Payments
+
+Integration with payment gateways (Stripe, PayPal, local gateway).
+
+Option for Cash on Delivery (COD).
+
+Secure payment flow + backend webhook for success/failure.
+
+⭐ 6. Reviews & Ratings
+
+Users can leave reviews/ratings for products.
+
+Admin moderation of reviews.
+
+
+📊 8. Dashboard (Admin)
+
+Orders overview (pending, shipped, delivered, canceled).
+
+Revenue stats, best-selling products.
+
+User management.
+
+
+✉️ 9. Extras (Optional but Common)
+
+Email notifications (order confirmation, shipping updates).
+
+Wishlist.
+
+Coupons / Discounts.
+
+Multi-language / multi-currency.
+
+Responsive & mobile-first design.
