@@ -10,6 +10,9 @@ This is a Node.js project for managing a online bookstore.
 - User authentication
 - Responsive UI
 
+## Languages:
+- Backend( Express , Sequelize and Postgresql)
+- Frontend(React and Redux) 
 ## Installation
 ```bash
 npm install
