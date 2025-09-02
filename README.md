@@ -24,11 +24,15 @@ This is a Node.js project for managing a online bookstore.
 - PostgreSQL
 
 ## sneak peek
-
+# admin Dashboard 
 ![Application admin dashboard](./images/admin_dashboard.png)
+# index page show all products
 ![Application index ](./images/index.png)
+# index page show user buttons
 ![Application indexpage](./images/indexpage.png)
+# Carts Page show the users carts
 ![Application carts page](./images/cartspage.png)
+# Orders page show the orders status 
 ![Application orders page](./images/orderspage.png)
 
 ## Getting Started
