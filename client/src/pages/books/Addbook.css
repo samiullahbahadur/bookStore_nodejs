@@ -1,105 +1,119 @@
 .pookPage {
-  min-width: 100vw;
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  max-width: 720px;
+  margin: 16px auto;
+  padding: 24px;
+  background: #ffffff;
+  border: 1px solid #e9ecef;
+  border-radius: 16px;
+  box-shadow: 0 6px 24px rgba(16, 24, 40, 0.6);
 }
-.bookContainer {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 3px 16px;
-  border-radius: 32px;
-  box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.327);
-  min-width: 45%;
-  background-color: #fff;
-  margin-top: 8px;
-}
-
-.bookContainer h3 {
-  font-weight: 400;
+/* Title */
+.pookPage h2 {
+  margin: 0 0 20px;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #111827;
+  letter-spacing: 0.2px;
   text-align: center;
 }
-.bookContainer form {
+.bookForm {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 16px;
+}
+.bookForm label {
+  display: block;
+  font-size: 0.9rem;
+  color: #374151;
+  margin-bottom: 6px;
+}
+.bookForm input[type="text"],
+.bookForm input[type="email"],
+.bookForm input[type="number"],
+.bookForm input[type="password"] {
   width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+  padding: 12px 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  background: #fff;
+  color: #111827;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  box-sizing: border-box;
 }
-
-.fromGroup label {
-  font-size: 14px;
+.bookForm input[type="file"] {
+  display: block;
+  width: 100%;
+  padding: 10px 0;
+  border: 1px dashed #d1d5db;
+  border-radius: 10px;
+  background: #fafafa;
+  text-align: center;
+  cursor: pointer;
 }
-
-.fromGroup input {
-  border: 2px solid #e0e0e0;
-  border-radius: 16px;
+/* Focus states */
+.bookForm input:focus {
+  border-color: #6366f1; /* indigo-500 */
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
 }
 
 .fromGroup textarea {
-  border: 2px solid #e0e0e0;
-  border-radius: 16px;
+  width: 100%;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  background: #fff;
+  color: #111827;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
-
-.bookContainer button {
-  color: #00695c;
-  background: white;
-  padding: 16px;
-  border: 1px solid #00695c;
-  border-radius: 16px;
-  cursor: pointer;
-  font-weight: bold;
+.profileActions_book {
+  grid-column: 1 / -1; /* full width row at the bottom */
 }
-.bookContainer button:hover {
-  background-color: #00695c;
-  color: white;
-}
-
-.inside_btn {
+.profileActions_book {
+  /* full width row at the bottom */
   display: flex;
   justify-content: space-between;
-  padding: 0 32px;
+  gap: 12px;
 }
-.inside_btn .link_btn {
-  color: #00695c;
-  background: white;
-  padding: 16px;
-  border: 1px solid #00695c;
-  border-radius: 16px;
+.profileActions_book button {
+  border-radius: 10px;
+  padding: 18px 12px;
+  font-weight: 600;
+  font-size: 0.95rem;
   cursor: pointer;
-  font-weight: bold;
+  background: #e5e7eb;
+  width: 48%;
+  color: #111827;
+  border: none;
 }
-.inside_btn .link_btn:hover {
-  background-color: #00695c;
-  color: white;
+.bookForm button[type="submit"]:hover {
+  background: #354056;
+  color: #fff; /* indigo-500 */
+}
+.profileActions_book_update {
+  /* full width row at the bottom */
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+.profileActions_book_update button {
+  border-radius: 10px;
+  padding: 18px 12px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  background: #e5e7eb;
+  width: 48%;
+  color: #111827;
+  border: none;
+}
+.bookForm button[type="submit"]:hover {
+  background: #354056;
+  color: #fff; /* indigo-500 */
 }
 
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.modal {
-  background: white;
-  padding: 30px;
-  border-radius: 8px;
-  height: 200px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.modal-buttons {
-  margin-top: 15px;
-  display: flex;
-  justify-content: space-around;
+@media (max-width: 640px) {
+  .bookForm {
+    grid-template-columns: 1fr;
+  }
 }

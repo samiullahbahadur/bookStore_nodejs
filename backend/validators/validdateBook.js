@@ -1,24 +1,8 @@
-// import { body } from "express-validator";
 
-// export const validateBook = [
-//   body("title").notEmpty().withMessage("Title is required"),
-//   body("description").notEmpty().withMessage("Description is required"),
-//   body("price")
-//     .isFloat({ min: 0 })
-//     .withMessage("Price must be a positive number"),
-//   body("author").notEmpty().withMessage("Author is required"),
-//   body("stock")
-//     .exists()
-//     .withMessage("Stock is required")
-//     .isInt({ min: 1 })
-//     .withMessage("Stock must be greater than 0"),
-// ];
-
-// export default validateBook;
-
+// backend/validators/validateBook.js
 import { body } from "express-validator";
 
-export const validateBook = [
+export const validateBook = (mode = "create") => [
   body("title").notEmpty().withMessage("Title is required"),
   body("description").notEmpty().withMessage("Description is required"),
   body("price")
@@ -33,7 +17,7 @@ export const validateBook = [
 
   // ✅ Custom validation for photo
   (req, res, next) => {
-    if (!req.file && req.method === "POST") {
+    if (mode === "create" && !req.file) {
       // On create: require photo
       return res.status(400).json({ errors: [{ msg: "Photo is required" }] });
     }
@@ -48,4 +32,5 @@ export const validateBook = [
     next();
   },
 ];
+
 export default validateBook;

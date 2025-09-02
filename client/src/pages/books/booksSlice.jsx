@@ -5,7 +5,7 @@ import ApiClient from "../../api/apiClient";
 export const fetchBooks = createAsyncThunk("books/fetchBooks", async () => {
   const { data } = await ApiClient.get(`/books`);
 
-  return Array.isArray(data) ? data : data.books || [];
+  return data.data || [];
 });
 
 export const addBook = createAsyncThunk(
@@ -18,7 +18,7 @@ export const addBook = createAsyncThunk(
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log("AddBook response:", data);
+
       return data;
     } catch (err) {
       // Return backend errors or message
@@ -39,7 +39,8 @@ export const updateBooks = createAsyncThunk(
           Authorization: `Bearer ${token}`,
         },
       });
-      return data.book;
+
+      return data.data;
     } catch (err) {
       // Return backend errors or message
       if (err.response && err.response.data) {
@@ -66,6 +67,7 @@ export const deleteBook = createAsyncThunk(
   async (id, { rejectWithValue }) => {
     try {
       await ApiClient.delete(`/books/${id}`);
+
       return id;
     } catch (error) {
       return rejectWithValue(err.response?.data?.error || err.message);
@@ -86,31 +88,30 @@ const booksSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(fetchBooks.pending, (state) => {
-        state.status = true;
+        state.status = "Loading";
         state.error = null;
       })
       .addCase(fetchBooks.fulfilled, (state, action) => {
-        state.status = false;
+        state.status = "succeeded";
         state.items = action.payload;
       })
       .addCase(fetchBooks.rejected, (state, action) => {
-        state.status = true;
+        state.status = "failed";
         state.error = action.error.message;
       })
       .addCase(addBook.pending, (state) => {
-        state.status = true;
+        state.status = "Loading";
         state.error = null;
       })
       .addCase(addBook.fulfilled, (state, action) => {
-        state.status = false;
-        if (action.payload.book) {
-          state.items.push(action.payload.book); // <-- use only the book
-        }// else {
-        //   state.items.push(action.payload); // fallback if backend changes
-        // } // state.items = action.payload.items;
+        state.status = "Succeeded";
+        if (action.payload.data) {
+          state.items.push(action.payload.data); // <-- use only the book
+        }
+        // state.message = action.payload.message;
       })
       .addCase(addBook.rejected, (state, action) => {
-        state.status = false;
+        state.status = "failed";
         if (action.payload?.errors) {
           state.error = action.payload.errors.map((e) => e.message).join(", ");
         } else {
@@ -119,10 +120,14 @@ const booksSlice = createSlice({
       })
       // updateBook
       .addCase(updateBooks.fulfilled, (state, action) => {
+        state.status = "Succeeded";
         state.currentBook = action.payload;
         // also update in list
         const idx = state.items.findIndex((b) => b.id === action.payload.id);
-        if (idx !== -1) state.items[idx] = action.payload;
+        if (idx !== -1) {
+          state.items[idx] = action.payload;
+        }
+        // state.message = "Book updated successfully"; // ✅ or use backend message if returned
       })
       .addCase(updateBooks.rejected, (state, action) => {
         state.error = action.payload;
@@ -136,7 +141,9 @@ const booksSlice = createSlice({
         state.currentBook = action.payload;
       }) // delete book
       .addCase(deleteBook.fulfilled, (state, action) => {
+        state.status = "Succeeded";
         state.items = state.items.filter((b) => b.id !== action.payload);
+        // state.message = action.payload.message || "Book deleted successfully"; // ✅
       })
       .addCase(deleteBook.rejected, (state, action) => {
         state.error = action.payload;

@@ -67,11 +67,14 @@ export const loginUser = async (req, res) => {
     user.token = token;
     await user.save();
     return res.status(200).json({
+      success: true,
       message: "Login Successful",
       user: {
         id: user.id,
         name: user.name,
+        username: user.username, // ✅ include
         email: user.email,
+        photo: user.photo, // ✅ include
         isAdmin: user.isAdmin,
       },
       token,
@@ -118,16 +121,19 @@ export const deleteUser = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
 export const updateUser = async (req, res) => {
   try {
     const userId = req.params.id;
-
     const { name, username, email, password } = req.body;
-    const photo = req.file ? req.file.path : user.photo;
-    const user = await db.User.findByPk(userId);
+    // const photo = req.file ? req.file.path : user.photo;
+
+    const user = await User.findByPk(userId);
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
+
+    // Handle photo upload & remove old photo if exists
     if (req.file) {
       if (user.photo) {
         const oldPath = path.join("uploads", path.basename(user.photo));
@@ -135,17 +141,30 @@ export const updateUser = async (req, res) => {
           fs.unlinkSync(oldPath); // Remove old image
         }
       }
-
       user.photo = req.file.filename;
     }
-    user.name = name || user.name;
-    user.username = username || user.username;
-    user.email = email || user.email;
-    user.password = password || user.password;
+
+    // Update only provided fields
+    if (name) user.name = name;
+    if (username) user.username = username;
+    if (email) user.email = email;
+    if (password) user.password = password;
 
     await user.save();
 
-    res.status(200).json({ message: "User updated successfully", user });
+    // Send back the **full updated user object (minus password)**
+    res.status(200).json({
+      success: true,
+      message: "User updated successfully",
+      data: {
+        id: user.id,
+        name: user.name,
+        username: user.username,
+        email: user.email,
+        photo: user.photo,
+        isAdmin: user.isAdmin,
+      },
+    });
   } catch (error) {
     console.error("Update error:", error);
     res.status(500).json({ error: error.message });

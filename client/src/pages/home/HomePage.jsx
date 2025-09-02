@@ -8,6 +8,7 @@ import { fetchBooks, deleteBook } from "../books/booksSlice";
 import { addToCart, fetchCarts } from "../../redux/cartSlice";
 
 import "./HomePage.css";
+import { setNotification } from "../../redux/notificationSlice";
 
 export const HomePage = () => {
   const [errors, setErrors] = useState("");
@@ -32,6 +33,12 @@ export const HomePage = () => {
   const confirmDeleteBook = () => {
     if (!bookToDelete) return;
     dispatch(deleteBook(bookToDelete.id));
+    dispatch(
+      setNotification({
+        message: "Book Deletee successful!",
+        type: "success",
+      })
+    );
     setBookToDelete(null);
   };
 
@@ -41,7 +48,7 @@ export const HomePage = () => {
   const handleAddToCart = async (bookId) => {
     try {
       await dispatch(addToCart({ bookId, quantity: 1 })).unwrap();
-      await dispatch(fetchCarts()).unwrap();
+      // await dispatch(fetchCarts()).unwrap();
       navigate("/carts");
     } catch (err) {
       console.error("Add to cart failed:", err);
