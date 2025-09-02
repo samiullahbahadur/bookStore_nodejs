@@ -3,15 +3,28 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { logoutUser } from "../../pages/authPage/authSlice";
 import { Link } from "react-router-dom";
+import { setNotification } from "../../redux/notificationSlice";
 import "./Header.css";
 const Header = () => {
   const dispatch = useDispatch();
-  const navicate = useNavigate();
+  const navigate = useNavigate();
   const { user, token } = useSelector((state) => state.auth);
 
   const handleLogout = async () => {
     dispatch(logoutUser());
-    navicate("/auth");
+    dispatch(
+      setNotification({
+        message: "Logged out successfully!",
+        type: "success",
+      })
+    );
+    navigate("/auth");
+  };
+  const getPhotoUrl = (photo) => {
+    if (!photo) return "/placeholder.png"; // fallback image
+    // remove any leading "uploads/" from the db value
+    const fileName = photo.replace(/^uploads[\\/]/, "");
+    return `http://localhost:5000/uploads/${fileName}?t=${Date.now()}`;
   };
 
   return (
@@ -55,8 +68,29 @@ const Header = () => {
                   <span className="username">Welcome, {user?.name}</span>
                 </li>
                 <li className="main-header__item">
+                  {user.photo ? (
+                    <img
+                      src={getPhotoUrl(user.photo)}
+                      alt={user.name}
+                      style={{ width: "20px", borderRadius: "50%" }}
+                    />
+                  ) : (
+                    "Photo"
+                  )}
+                </li>
+                {/* <select>
+                  <option></option>
+                  <option> */}
+                <li className="main-header__item">
+                  <Link to="/profile">Profile</Link>
+                </li>
+                {/* </option>
+                  <option> */}
+                <li className="main-header__item">
                   <button onClick={handleLogout}>Logout</button>
                 </li>
+                {/* </option>
+                </select> */}
               </>
             )}
           </ul>

@@ -1,18 +1,26 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-
 import ApiClient, { apiClient } from "../../api/apiClient";
+import { setNotification } from "../../redux/notificationSlice";
 
 // Login Thunk
 export const loginUser = createAsyncThunk(
   "auth/loginUser",
-  async (credentials, { rejectWithValue }) => {
+  async (credentials, { rejectWithValue, dispatch }) => {
     try {
       const { data } = await ApiClient.post("users/auth/login", credentials);
-      // Save token to localStorage so user stays logged in
+
+      // Save token to localStorage
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
+
       return data;
     } catch (err) {
+      dispatch(
+        setNotification({
+          message: err.response?.data?.message || err.message,
+          type: "error",
+        })
+      );
       return rejectWithValue(err.response?.data?.message || err.message);
     }
   }
@@ -21,31 +29,80 @@ export const loginUser = createAsyncThunk(
 // Register Thunk
 export const registerUser = createAsyncThunk(
   "auth/registerUser",
-  async (formDat, { rejectWithValue }) => {
+  async (formData, { rejectWithValue, dispatch }) => {
     try {
-      const { data } = await ApiClient.post("users/auth/register", formDat, {
+      const { data } = await ApiClient.post("users/auth/register", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
+
       return data;
     } catch (err) {
+      dispatch(
+        setNotification({
+          message: err.response?.data?.message || err.message,
+          type: "error",
+        })
+      );
       return rejectWithValue(err.response?.data?.message || err.message);
     }
   }
 );
-export const logoutUser = createAsyncThunk(
-  "auth/logoutUser",
-  async (_, { rejectWithValue }) => {
+
+export const updateProfile = createAsyncThunk(
+  "profile/updateProfile",
+  async ({ id, formData }, { rejectWithValue, dispatch }) => {
     try {
-      await ApiClient.post("/users/auth/logout"); // token sent via headers
-      return true;
+      const { data } = await ApiClient.put(`/users/${id}`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      // ✅ update notification
+      // dispatch(
+      //   setNotification({
+      //     message: "Profile updated successfully!",
+      //     type: "success",
+      //   })
+      // );
+
+      // also update localStorage
+
+      console.log("Backend response:", data);
+      localStorage.setItem("user", JSON.stringify(data.data));
+
+      return data.data;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
     }
   }
 );
 
+// Logout Thunk
+export const logoutUser = createAsyncThunk(
+  "auth/logoutUser",
+  async (_, { rejectWithValue, dispatch }) => {
+    try {
+      await ApiClient.post("/users/auth/logout");
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+
+      // ✅ Notify
+
+      return true;
+    } catch (err) {
+      dispatch(
+        setNotification({
+          message: err.response?.data?.message || err.message,
+          type: "error",
+        })
+      );
+      return rejectWithValue(err.response?.data?.message || err.message);
+    }
+  }
+);
+
+// Fetch users
 export const fetchUsers = createAsyncThunk(
   "user/fetchUsers",
   async (_, { rejectWithValue }) => {
@@ -53,7 +110,6 @@ export const fetchUsers = createAsyncThunk(
       const { data } = await apiClient.get("/users");
       return data.users;
     } catch (error) {
-      console.error("API error:", error);
       return rejectWithValue(error.response?.data?.message || error.message);
     }
   }
@@ -70,24 +126,12 @@ const authSlice = createSlice({
         return null;
       }
     })(),
-
+    status: "idle",
     loading: false,
     error: null,
+    currentUser: null,
   },
-  // initialState,
   reducers: {
-    // loginUserSuccess: (state, action) => {
-    //   const user = action.payload.user;
-    //   // normalize admin flag
-    //   user.isAdmin =
-    //     user.isAdmin === true ||
-    //     user.isAdmin === "true" ||
-    //     user.role === "admin";
-    //   state.user = user;
-    //   state.token = action.payload.token;
-    //   localStorage.setItem("user", JSON.stringify(state.user));
-    //   localStorage.setItem("token", state.token);
-    // },
     logout: (state) => {
       state.user = null;
       state.token = null;
@@ -99,29 +143,43 @@ const authSlice = createSlice({
     builder
       // Login
       .addCase(loginUser.pending, (state) => {
-        state.loading = true;
+        state.status = "loading";
         state.error = null;
       })
       .addCase(loginUser.fulfilled, (state, action) => {
-        state.loading = false;
+        state.status = "succeeded";
         state.user = action.payload.user;
         state.token = action.payload.token;
       })
       .addCase(loginUser.rejected, (state, action) => {
-        state.loading = false;
+        state.status = "failed";
         state.error = action.payload;
       })
       // Register
       .addCase(registerUser.pending, (state) => {
-        state.loading = true;
+        state.status = "loading";
         state.error = null;
       })
       .addCase(registerUser.fulfilled, (state, action) => {
-        state.loading = false;
+        state.status = "succeeded";
         state.user = action.payload.user;
         state.token = action.payload.token;
       })
       .addCase(registerUser.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
+      })
+      //update user
+      .addCase(updateProfile.pending, (state) => {
+        state.status = "loading";
+        state.error = null;
+      })
+      .addCase(updateProfile.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.currentUser = action.payload; // full updated user
+        state.user = action.payload; // sync local user with backend response
+      })
+      .addCase(updateProfile.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
@@ -129,11 +187,11 @@ const authSlice = createSlice({
       .addCase(logoutUser.fulfilled, (state) => {
         state.user = null;
         state.token = null;
-        localStorage.removeItem("token");
       })
+      // Fetch users
       .addCase(fetchUsers.fulfilled, (state, action) => {
-        state.user = "succeeded";
-        state.user = action.payload;
+        state.status = "succeeded";
+        state.currentUser = action.payload;
       });
   },
 });

@@ -6,10 +6,10 @@ const { Book } = db;
 export const getBooks = async (req, res) => {
   try {
     const books = await Book.findAll();
-    res.status(201).json(books);
+    res.status(200).json({ success: true, data: books });
   } catch (error) {
     console.log(error);
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ success: false, message: error.message });
   }
 };
 
@@ -41,7 +41,12 @@ export const creatBooks = async (req, res) => {
       stock,
       userId,
     });
-    res.status(201).json(newBook);
+    res.status(201).json({
+      success: true,
+
+      message: "Book added successfully!",
+      data: newBook,
+    });
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: error.message });
@@ -53,7 +58,10 @@ export const deleteBook = async (req, res) => {
     const bookId = req.params.id;
     const book = await Book.findByPk(bookId);
     if (!book) {
-      return res.status(404).json({ error: "Book not found" });
+      return res.status(404).json({
+        success: false,
+        message: "Book not found",
+      });
     }
     if (book.photo) {
       const imagePath = path.join("uploads", path.basename(book.photo));
@@ -62,10 +70,17 @@ export const deleteBook = async (req, res) => {
       }
     }
     await book.destroy();
-    res.status(201).json({ id: bookId, message: "Book deleted SuccessFully " });
+    res.status(201).json({
+      id: bookId,
+      success: true,
+      message: "Book deleted SuccessFully ",
+    });
   } catch (error) {
     console.log(error);
-    res.status(500).json({ error: error.message });
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
   }
 };
 
@@ -76,7 +91,10 @@ export const updateBook = async (req, res) => {
 
     const book = await Book.findByPk(bookId);
     if (!book) {
-      return res.status(404).json({ message: "Book not found" });
+      return res.status(404).json({
+        success: false,
+        message: "Book not found",
+      });
     }
 
     if (req.file) {
@@ -97,7 +115,11 @@ export const updateBook = async (req, res) => {
 
     await book.save();
 
-    res.status(200).json({ message: "Book updated successfully", book });
+    res.status(200).json({
+      success: true,
+      message: "Book updated successfully",
+      data: book,
+    });
   } catch (error) {
     console.error("Update error:", error);
     res.status(500).json({ message: "Server error", error: error.message });

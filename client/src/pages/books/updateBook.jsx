@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchBookById, updateBooks } from "./booksSlice";
-
+// import { toast } from "react-toastify";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import Header from "../../components/headers/Header";
 import "./Addbook.css";
 import useBookForm from "../../hooks/useBookForm";
+import { setNotification } from "../../redux/notificationSlice";
 
 export const updateBook = () => {
   const dispatch = useDispatch();
@@ -61,6 +62,12 @@ export const updateBook = () => {
 
     try {
       await dispatch(updateBooks({ id, formData: fd })).unwrap();
+      dispatch(
+        setNotification({
+          message: "Book Updated successful!",
+          type: "success",
+        })
+      );
       navigate("/");
     } catch (err) {
       console.error("Update failed:", err);
@@ -73,7 +80,7 @@ export const updateBook = () => {
     const fileName = photo.replace(/^uploads[\\/]/, "");
     return `http://localhost:5000/uploads/${fileName}?t=${Date.now()}`;
   };
-  console.log("currentBook", currentBook);
+
   if (status === "loading") return <p>Loading book...</p>;
   if (error) return <p className="error">{error}</p>;
   if (!currentBook) return <p>Book not found</p>;
@@ -82,91 +89,89 @@ export const updateBook = () => {
     <>
       <Header />
       <div className="pookPage">
-        <div className="bookContainer">
-          <h3>Update Book</h3>
-          {/* {backendError && <p className="error">{backendError}</p>} */}
-          {/* {error && <p className="error">{error}</p>} */}
-          <form onSubmit={handleSubmit}>
-            <div className="fromGroup">
-              <label htmlFor="title">Title</label>
-              <input
-                type="text"
-                name="title"
-                id="title"
-                placeholder="Title"
-                value={formData.title}
-                onChange={handleChange}
-              />
-              {errors.title && <span className="error">{errors.title}</span>}
-            </div>
+        <h2>Update Book</h2>
+        {/* {backendError && <p className="error">{backendError}</p>} */}
+        {/* {error && <p className="error">{error}</p>} */}
+        <form onSubmit={handleSubmit} className="bookForm">
+          <div className="fromGroup">
+            <label htmlFor="title">Title</label>
+            <input
+              type="text"
+              name="title"
+              id="title"
+              placeholder="Title"
+              value={formData.title}
+              onChange={handleChange}
+            />
+            {errors.title && <span className="error">{errors.title}</span>}
+          </div>
 
-            <div className="fromGroup">
-              <label htmlFor="photo">Product Picture</label>
-              <input type="file" name="photo" onChange={handleChange} />
-              {currentBook.photo && (
-                <img
-                  src={getPhotoUrl(currentBook.photo)}
-                  alt={currentBook.title}
-                  style={{ width: "100px", marginTop: "5px" }}
-                />
-              )}
-            </div>
+          <div className="fromGroup">
+            <label htmlFor="photo">Product Picture</label>
+            <input type="file" name="photo" onChange={handleChange} />
+            {errors.photo && <span className="error">{errors.photo}</span>}
+            {currentBook.photo && (
+              <img
+                src={getPhotoUrl(currentBook.photo)}
+                alt={currentBook.title}
+                style={{ width: "25px", borderRadius: "50%" }}
+              />
+            )}
+          </div>
 
-            <div className="fromGroup">
-              <label htmlFor="price">Price</label>
-              <input
-                type="number"
-                name="price"
-                id="price"
-                step="0.01"
-                placeholder="Price"
-                value={formData.price}
-                onChange={handleChange}
-              />
-              {errors.price && <span className="error">{errors.price}</span>}
-            </div>
-            <div className="fromGroup">
-              <label htmlFor="stock">Stock</label>
-              <input
-                type="number"
-                name="stock"
-                id="stock"
-                value={formData.stock}
-                onChange={handleChange}
-              />
-            </div>
+          <div className="fromGroup">
+            <label htmlFor="price">Price</label>
+            <input
+              type="number"
+              name="price"
+              id="price"
+              step="0.01"
+              placeholder="Price"
+              value={formData.price}
+              onChange={handleChange}
+            />
+            {errors.price && <span className="error">{errors.price}</span>}
+          </div>
+          <div className="fromGroup">
+            <label htmlFor="stock">Stock</label>
+            <input
+              type="number"
+              name="stock"
+              id="stock"
+              value={formData.stock}
+              onChange={handleChange}
+            />
+          </div>
 
-            <div className="fromGroup">
-              <label htmlFor="author">Author</label>
-              <input
-                type="text"
-                name="author"
-                id="author"
-                value={formData.author}
-                onChange={handleChange}
-              />
-            </div>
+          <div className="fromGroup">
+            <label htmlFor="author">Author</label>
+            <input
+              type="text"
+              name="author"
+              id="author"
+              value={formData.author}
+              onChange={handleChange}
+            />
+          </div>
 
-            <div className="fromGroup">
-              <label htmlFor="description">Description</label>
-              <textarea
-                name="description"
-                id="description"
-                rows="3"
-                value={formData.description}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="inside_btn">
-              <button type="submit" className="btn">
-                Update Book
-              </button>
-              <Link to="/" className="link_btn">
-                Back
-              </Link>
-            </div>
-          </form>
-        </div>
+          <div className="fromGroup">
+            <label htmlFor="description">Description</label>
+            <textarea
+              name="description"
+              id="description"
+              rows="3"
+              value={formData.description}
+              onChange={handleChange}
+            />
+          </div>
+          {/* Buttons at bottom */}
+          <div className="profileActions_book_update">
+            <button type="submit">Update Profile</button>
+            <Link to="/" className="btn-secondary">
+              Cancel
+            </Link>
+          </div>
+        </form>
       </div>
     </>
   );
