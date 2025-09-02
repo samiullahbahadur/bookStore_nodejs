@@ -31,11 +31,30 @@ This is a Node.js project for managing a online bookstore.
 ![Application carts page](./images/cartspage.png)
 ![Application orders page](./images/orderspage.png)
 
-
 ## Getting Started
 
 **Prerequisites:** A Web Browser (preferably FireFox or Chrome)
 To get a local copy up and running follow these simple example steps.
+
+### **Option 1**
+
+#### Set up your own copy locally
+
+- Clone [the GitHub Repository](https://github.com/samiullahbahadur/Bookstore_node)
+- Go to the Project `cd Bookstor`
+- Run `npm install` to install the _dependencies_
+- Run `npm start` to run the live server.
+
+#### Set up your own copy locally
+
+- Clone [the GitHub Repository](https://github.com/samiullahbahadur/Bookstore)
+- Go to the Project `cd Bookstor`
+- Run `npm install` to install the _dependencies_
+- Run `npm start` to run the live server.
+
+## About me
+
+👤 **Samiullah Bahadur**
 
 ## Installation
 
