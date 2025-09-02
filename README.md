@@ -12,10 +12,30 @@ This is a Node.js project for managing a online bookstore.
 - User authentication
 - Responsive UI
 
-## Languages:
+> It is built using React.js as frontend , Express and postgresql
 
-- Backend( Express , Sequelize and Postgresql)
-- Frontend(React and Redux)
+## Built With
+
+- React (rsbuild)
+- Redux (redux-query)
+- CSS3
+- Express
+- Sequelize
+- PostgreSQL
+
+## sneak peek
+
+![Application admin dashboard](./images/admin_dashboard.png)
+![Application index ](./images/index.png)
+![Application indexpage](./images/indexpage.png)
+![Application carts page](./images/cartspage.png)
+![Application orders page](./images/orderspage.png)
+
+
+## Getting Started
+
+**Prerequisites:** A Web Browser (preferably FireFox or Chrome)
+To get a local copy up and running follow these simple example steps.
 
 ## Installation
 
