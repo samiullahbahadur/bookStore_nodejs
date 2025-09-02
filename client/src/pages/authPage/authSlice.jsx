@@ -57,18 +57,6 @@ export const updateProfile = createAsyncThunk(
       const { data } = await ApiClient.put(`/users/${id}`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-
-      // ✅ update notification
-      // dispatch(
-      //   setNotification({
-      //     message: "Profile updated successfully!",
-      //     type: "success",
-      //   })
-      // );
-
-      // also update localStorage
-
-      console.log("Backend response:", data);
       localStorage.setItem("user", JSON.stringify(data.data));
 
       return data.data;

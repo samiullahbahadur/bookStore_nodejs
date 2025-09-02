@@ -156,5 +156,6 @@ form {
   .dropdown-link:hover {
     background: #354056;
     color: #fff !important; /* force text color */
+    border-radius: 14px;
   }
 }

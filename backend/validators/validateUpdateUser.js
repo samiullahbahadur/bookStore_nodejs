@@ -1,3 +1,4 @@
+import { body } from "express-validator";
 export const validateUpdateUser = [
   body("name").optional().notEmpty().withMessage("Name cannot be empty"),
   body("username")

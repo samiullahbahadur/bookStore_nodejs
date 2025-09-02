@@ -1,21 +1,3 @@
-// import { body } from "express-validator";
-
-// export const validateBook = [
-//   body("title").notEmpty().withMessage("Title is required"),
-//   body("description").notEmpty().withMessage("Description is required"),
-//   body("price")
-//     .isFloat({ min: 0 })
-//     .withMessage("Price must be a positive number"),
-//   body("author").notEmpty().withMessage("Author is required"),
-//   body("stock")
-//     .exists()
-//     .withMessage("Stock is required")
-//     .isInt({ min: 1 })
-//     .withMessage("Stock must be greater than 0"),
-// ];
-
-// export default validateBook;
-
 import { body } from "express-validator";
 
 export const validateBook = [

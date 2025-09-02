@@ -1,43 +1,6 @@
-// import { useState } from "react";
-
-// const useBookForm = (initialValues) => {
-//   const [formData, setFormData] = useState(initialValues);
-//   const [errors, setErrors] = useState({});
-
-//   // Frontend validation
-//   const validate = () => {
-//     const temp = {};
-//     const stockValue = Number(formData.stock);
-//     if (!formData.title?.trim()) temp.title = "Title is required!";
-//     if (!formData.description?.trim())
-//       temp.description = "Description is required!";
-//     if (!formData.price || parseFloat(formData.price) <= 0)
-//       temp.price = "Price must be positive!";
-//     if (!formData.author?.trim()) temp.author = "Author is required!";
-//     if (formData.stock === "" || isNaN(stockValue)) {
-//       temp.stock = "Stock is required!";
-//     }
-//     setErrors(temp);
-//     return Object.keys(temp).length === 0;
-//   };
-
-//   const handleChange = (e) => {
-//     setFormData({ ...formData, [e.target.name]: e.target.value });
-
-//     // Clear error for field
-//     if (errors[e.target.name]) {
-//       setErrors({ ...errors, [e.target.name]: "" });
-//     }
-//   };
-
-//   return { formData, errors, setFormData, setErrors, handleChange, validate };
-// };
-
-// export default useBookForm;
-
 import { useState } from "react";
 
-const useBookForm = (initialValues) => {
+const useBookForm = (initialValues, mode = "register") => {
   const [formData, setFormData] = useState(initialValues);
   const [errors, setErrors] = useState({});
 

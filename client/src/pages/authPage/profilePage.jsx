@@ -44,19 +44,14 @@ const ProfilePage = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Submitting formData:", formData); // <-- check what you send
+
     if (!validate()) return; // stop if validation fails
 
-    console.log("Validation failed:", Errors);
     const data = new FormData();
     Object.entries(formData).forEach(([key, value]) => {
       if (value) data.append(key, value);
     });
 
-    console.log("Final FormData entries:");
-    for (let pair of data.entries()) {
-      console.log(pair[0], pair[1]);
-    }
     dispatch(updateProfile({ id: user.id, formData: data }))
       .unwrap()
       .then((res) => {
@@ -64,7 +59,7 @@ const ProfilePage = () => {
         dispatch(
           setNotification({ message: "Profile updated!", type: "success" })
         );
-        navigate("/");
+        navigate("/auth");
       })
       .catch((err) => {
         console.error("Update failed:", err);
@@ -138,7 +133,7 @@ const ProfilePage = () => {
               <img
                 src={previewPhoto}
                 alt={user?.name}
-                style={{ width: "50px", borderRadius: "50%", marginTop: "5px" }}
+                style={{ width: "30px", borderRadius: "50%" }}
               />
             ) : (
               "No photo"
