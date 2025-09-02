@@ -1,4 +1,4 @@
-import React from "react";
+import { React, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { logoutUser } from "../../pages/authPage/authSlice";
@@ -8,7 +8,20 @@ import "./Header.css";
 const Header = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
   const { user, token } = useSelector((state) => state.auth);
+
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (!event.target.closest(".user-menu") && dropdownOpen) {
+        setDropdownOpen(false);
+      }
+    };
+    document.addEventListener("click", handleClickOutside);
+    return () => document.removeEventListener("click", handleClickOutside);
+  }, [dropdownOpen]);
 
   const handleLogout = async () => {
     dispatch(logoutUser());
@@ -30,68 +43,73 @@ const Header = () => {
   return (
     <div>
       <header className="main-header">
-        <button id="side-menu-toggle">Menu</button>
+        {/* <button id="side-menu-toggle">Menu</button> */}
+
         <nav className="main-header__nav">
           <ul className="main-header__item-list">
-            <li className="main-header__item"></li>
             <li className="main-header__item">
               <Link to="/">Product</Link>
             </li>
-
-            <li className="main-header__item">
-              {user && user?.isAdmin && (
-                <Link to="/add-book"> Add Product</Link>
-              )}
-            </li>
-
+            {user?.isAdmin && (
+              <li className="main-header__item">
+                <Link to="/add-book">Add Product</Link>
+              </li>
+            )}
             <li className="main-header__item">
               <Link to="/carts">Carts</Link>
             </li>
-
             <li className="main-header__item">
               <Link to="/orders">Orders</Link>
             </li>
-            <li className="main-header__item">
-              {user && user?.isAdmin && (
+            {user?.isAdmin && (
+              <li className="main-header__item">
                 <Link to="/admin">Admin Dashboard</Link>
-              )}
-            </li>
+              </li>
+            )}
           </ul>
+
           <ul className="main-header__item-list">
             {!token ? (
               <li className="main-header__item">
                 <Link to="/auth">Login</Link>
               </li>
             ) : (
-              <>
-                <li className="main-header__item">
-                  <span className="username">Welcome, {user?.name}</span>
-                </li>
-                <li className="main-header__item">
-                  {user.photo ? (
-                    <img
-                      src={getPhotoUrl(user.photo)}
-                      alt={user.name}
-                      style={{ width: "20px", borderRadius: "50%" }}
-                    />
-                  ) : (
-                    "Photo"
-                  )}
-                </li>
-                {/* <select>
-                  <option></option>
-                  <option> */}
-                <li className="main-header__item">
-                  <Link to="/profile">Profile</Link>
-                </li>
-                {/* </option>
-                  <option> */}
-                <li className="main-header__item">
-                  <button onClick={handleLogout}>Logout</button>
-                </li>
-                {/* </option>
-                </select> */}
-              </>
+              <li className="main-header__item user-menu">
+                <div
+                  className="user-info"
+                  onClick={() => setDropdownOpen(!dropdownOpen)}
+                >
+                  <span className="username">{user?.name}</span>
+                  <span className="dropdown-icon">▼</span>
+                  &nbsp; &nbsp;
+                  <img
+                    src={
+                      user?.photo ? getPhotoUrl(user.photo) : "/placeholder.png"
+                    }
+                    alt={user?.name}
+                    className="user-photo"
+                  />
+                </div>
+
+                {dropdownOpen && (
+                  <ul className="dropdown-menu">
+                    <li>
+                      <Link
+                        to="/profile"
+                        className="dropdown-link"
+                        onClick={() => setDropdownOpen(false)}
+                      >
+                        Profile
+                      </Link>
+                    </li>
+                    <li>
+                      <button className="dropdown-link" onClick={handleLogout}>
+                        Logout
+                      </button>
+                    </li>
+                  </ul>
+                )}
+              </li>
             )}
           </ul>
         </nav>

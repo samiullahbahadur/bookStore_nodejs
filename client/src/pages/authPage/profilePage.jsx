@@ -1,61 +1,75 @@
-// src/pages/profile/ProfilePage.jsx
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { updateProfile } from "./authSlice";
 import { setNotification } from "../../redux/notificationSlice";
 import Header from "../../components/headers/Header";
+import useAuthForm from "../../hooks/useAuthForm";
 import "./authPage.css";
 import { Link, useNavigate } from "react-router-dom";
 
 const ProfilePage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { currentUser, user } = useSelector((state) => state.auth);
+  const { user } = useSelector((state) => state.auth);
 
-  const [formData, setFormData] = useState({
-    name: user?.name || "",
-    username: user?.username || "", // should work now
-    email: user?.email || "",
-    password: "",
-    photo: null,
-  });
+  // Use custom hook for form & validation (update mode)
+  const { formData, handleChange, validate, Errors } = useAuthForm(
+    {
+      name: user?.name || "",
+      username: user?.username || "",
+      email: user?.email || "",
+      password: "",
+      photo: null,
+    },
+    "update"
+  );
 
-  const handleChange = (e) => {
-    const { name, value, files } = e.target;
-    if (name === "photo") {
-      setFormData({ ...formData, photo: files[0] });
-    } else {
-      setFormData({ ...formData, [name]: value });
+  const [previewPhoto, setPreviewPhoto] = useState(
+    user?.photo ? getPhotoUrl(user.photo) : null
+  );
+
+  function getPhotoUrl(photo) {
+    if (!photo) return "/placeholder.png";
+    const fileName = photo.replace(/^uploads[\\/]/, "");
+    return `http://localhost:5000/uploads/${fileName}?t=${Date.now()}`;
+  }
+
+  const handlePhotoChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      handleChange({ target: { name: "photo", value: file, files: [file] } });
+      setPreviewPhoto(URL.createObjectURL(file));
     }
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    console.log("Submitting formData:", formData); // <-- check what you send
+    if (!validate()) return; // stop if validation fails
+
+    console.log("Validation failed:", Errors);
     const data = new FormData();
     Object.entries(formData).forEach(([key, value]) => {
       if (value) data.append(key, value);
     });
 
+    console.log("Final FormData entries:");
+    for (let pair of data.entries()) {
+      console.log(pair[0], pair[1]);
+    }
     dispatch(updateProfile({ id: user.id, formData: data }))
       .unwrap()
-      .then(() => {
+      .then((res) => {
+        console.log("Update success:", res);
         dispatch(
           setNotification({ message: "Profile updated!", type: "success" })
         );
         navigate("/");
       })
       .catch((err) => {
+        console.error("Update failed:", err);
         dispatch(setNotification({ message: err, type: "error" }));
       });
-  };
-
-  console.log("User from Redux:", user);
-
-  const getPhotoUrl = (photo) => {
-    if (!photo) return "/placeholder.png"; // fallback image
-    // remove any leading "uploads/" from the db value
-    const fileName = photo.replace(/^uploads[\\/]/, "");
-    return `http://localhost:5000/uploads/${fileName}?t=${Date.now()}`;
   };
 
   return (
@@ -64,6 +78,7 @@ const ProfilePage = () => {
       <div className="profilePage">
         <h2>My Profile</h2>
         <form onSubmit={handleSubmit} className="profileForm">
+          {/* Name */}
           <div className="formGroup">
             <label>Name</label>
             <input
@@ -72,8 +87,10 @@ const ProfilePage = () => {
               value={formData.name}
               onChange={handleChange}
             />
+            {Errors.name && <span className="error">{Errors.name}</span>}
           </div>
 
+          {/* Username */}
           <div className="formGroup">
             <label>Username</label>
             <input
@@ -82,8 +99,12 @@ const ProfilePage = () => {
               value={formData.username}
               onChange={handleChange}
             />
+            {Errors.username && (
+              <span className="error">{Errors.username}</span>
+            )}
           </div>
 
+          {/* Email */}
           <div className="formGroup">
             <label>Email</label>
             <input
@@ -92,8 +113,10 @@ const ProfilePage = () => {
               value={formData.email}
               onChange={handleChange}
             />
+            {Errors.email && <span className="error">{Errors.email}</span>}
           </div>
 
+          {/* Password */}
           <div className="formGroup">
             <label>Password</label>
             <input
@@ -102,24 +125,27 @@ const ProfilePage = () => {
               value={formData.password}
               onChange={handleChange}
             />
-          </div>
-
-          <div className="formGroup">
-            <label>Profile Picture</label>
-            <input type="file" name="photo" onChange={handleChange} />
-
-            {user?.photo ? (
-              <img
-                src={getPhotoUrl(user.photo)}
-                alt={user.title}
-                style={{ width: "25px", borderRadius: "50%" }}
-              />
-            ) : (
-              "no photo"
+            {Errors.password && (
+              <span className="error">{Errors.password}</span>
             )}
           </div>
 
-          {/* Buttons at bottom */}
+          {/* Profile Photo */}
+          <div className="formGroup">
+            <label>Profile Picture</label>
+            <input type="file" name="photo" onChange={handlePhotoChange} />
+            {previewPhoto ? (
+              <img
+                src={previewPhoto}
+                alt={user?.name}
+                style={{ width: "50px", borderRadius: "50%", marginTop: "5px" }}
+              />
+            ) : (
+              "No photo"
+            )}
+          </div>
+
+          {/* Buttons */}
           <div className="profileActions">
             <button type="submit">Update Profile</button>
             <Link to="/" className="btn-secondary">

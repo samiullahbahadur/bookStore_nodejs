@@ -87,7 +87,6 @@
   font-size: 0.95rem;
   cursor: pointer;
   background: #e5e7eb;
-
   color: #111827;
   border: none;
 }
@@ -101,7 +100,9 @@
   cursor: pointer;
 }
 .error {
-  color: #e50829;
+  color: red;
+  font-size: 0.8rem;
+  margin-top: 2px;
 }
 
 /* Update users Profile */
@@ -194,7 +195,8 @@
   justify-content: space-between;
   gap: 8px;
   margin-top: 20px;
-  margin-bottom: 20px;
+  margin-bottom: 70px;
+ 
 }
 /* Buttons */
 .profileActions button {
@@ -208,7 +210,7 @@
   color: #111827;
   border: none;
 }
-.profileForm button[type="submit"]:hover {
+.profileActions button[type="submit"]:hover {
   background: #354056;
   color: #fff; /* indigo-500 */
 }

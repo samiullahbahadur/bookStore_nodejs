@@ -19,6 +19,23 @@ export default function useAuthForm(initialValues, mode = "login") {
         tempErrors.password =
           "Password must be at least 8 characters, include a letter, number, and special symbol";
       }
+    } else if (mode === "update") {
+      // Update validation: name & username required, others optional
+      if (!formData.name?.trim()) tempErrors.name = "Name is required";
+      if (!formData.username?.trim())
+        tempErrors.username = "Username is required";
+
+      if (formData.email && !/\S+@\S+\.\S+/.test(formData.email)) {
+        tempErrors.email = "Valid email is required";
+      }
+
+      if (formData.password) {
+        const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/;
+        if (!passwordRegex.test(formData.password)) {
+          tempErrors.password =
+            "Password must be at least 8 characters, include a letter, number, and special symbol";
+        }
+      }
     } else {
       // Login validation
       if (!formData.email?.trim()) tempErrors.email = "Valid email is required";
@@ -28,12 +45,18 @@ export default function useAuthForm(initialValues, mode = "login") {
     setErrors(tempErrors);
     return Object.keys(tempErrors).length === 0;
   };
+
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value, files } = e.target;
+    if (files) {
+      setFormData({ ...formData, [name]: files[0] });
+    } else {
+      setFormData({ ...formData, [name]: value });
+    }
 
     // Remove error for the changed field
-    if (Errors[e.target.name]) {
-      setErrors({ ...Errors, [e.target.name]: "" });
+    if (Errors[name]) {
+      setErrors({ ...Errors, [name]: "" });
     }
   };
 
