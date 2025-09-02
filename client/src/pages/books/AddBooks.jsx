@@ -13,14 +13,17 @@ const AddBooks = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { token } = useSelector((s) => s.auth);
-  const { formData, errors, handleChange, validate } = useBookForm({
-    title: "",
-    description: "",
-    price: "",
-    stock: "",
-    author: "",
-    photo: null,
-  });
+  const { formData, errors, handleChange, validate } = useBookForm(
+    {
+      title: "",
+      description: "",
+      price: "",
+      stock: "",
+      author: "",
+      photo: null,
+    },
+    "create"
+  );
 
   const handleSubmit = async (e) => {
     e.preventDefault();

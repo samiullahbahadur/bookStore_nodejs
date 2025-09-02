@@ -22,7 +22,7 @@ route.post(
   authenticate,
   isAdmin,
   upload.single("photo"),
-  validateBook,
+  validateBook("create"),
   validate,
   creatBooks
 );
@@ -31,7 +31,7 @@ route.put(
   authenticate,
   isAdmin,
   upload.single("image"),
-  validateBook,
+  validateBook("update"),
   validate,
   updateBook
 );

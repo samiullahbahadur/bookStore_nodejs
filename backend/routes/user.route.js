@@ -1,9 +1,14 @@
 import express from "express";
 import authenticate from "../middleware/auth.js";
 import upload from "../middleware/upload.js";
-import validateUser from "../validators/validateUser.js";
 import validate from "../validators/validate.js";
-import validateUpdateUser from "../validators/validateUpdateUser.js";
+
+import {
+  validateRegister,
+  validateUpdate,
+  validateLogin,
+} from "../validators/validateUser.js";
+
 import {
   createUser,
   getUsers,
@@ -19,17 +24,17 @@ router.get("/", getUsers);
 router.post(
   "/auth/register",
   upload.single("photo"),
-  validateUser,
   validate,
+  validateRegister,
   createUser
 );
-router.post("/auth/login", loginUser);
+router.post("/auth/login", validateLogin, loginUser);
 router.post("/auth/logout", authenticate, logoutUser);
 router.delete("/:id", deleteUser);
 router.put(
   "/:id",
   upload.single("photo"),
-  validateUpdateUser,
+  validateUpdate,
   validate,
   updateUser
 );
