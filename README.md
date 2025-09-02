@@ -56,11 +56,12 @@ To get a local copy up and running follow these simple example steps.
 
 👤 **Samiullah Bahadur**
 
-## Installation
+## Contributors
 
-```bash
-- Express:
-npm init -y
-npm install express
-npm start
-```
+Contributions, issues, and feature requests are welcome!
+
+Feel free to check the [issues page](../../issues/).
+
+## Show your support
+
+Give a ⭐️ if you like this project!
