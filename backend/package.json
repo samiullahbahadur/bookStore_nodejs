@@ -5,10 +5,12 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "migrate": " npx sequelize-cli db:migrate",
-    "down": "npx sequelize-cli db:migrate:undo",
-    "start": "nodemon index.js"
+    "start": "nodemon index.js",
+    "migrate:dev": "npx sequelize-cli db:migrate",
+    "migrate:test": "cross-env NODE_ENV=test npx sequelize-cli db:migrate",
+    "down:dev": "npx sequelize-cli db:migrate:undo",
+    "down:test": "cross-env NODE_ENV=test npx sequelize-cli db:migrate:undo",
+    "test": "cross-env NODE_ENV=test jest --runInBand"
   },
   "author": "",
   "license": "ISC",
@@ -19,6 +21,7 @@
     "express": "^5.1.0",
     "express-validator": "^7.2.1",
     "jsonwebtoken": "^9.0.2",
+    "mocha": "^11.7.2",
     "multer": "^2.0.1",
     "nodemon": "^3.1.10",
     "pdfkit": "^0.17.1",
@@ -27,6 +30,9 @@
     "sequelize": "^6.37.7"
   },
   "devDependencies": {
-    "sequelize-cli": "^6.6.3"
+    "cross-env": "^10.0.0",
+    "jest": "^30.1.3",
+    "sequelize-cli": "^6.6.3",
+    "supertest": "^7.1.4"
   }
 }

@@ -25,23 +25,23 @@ This is a Node.js project for managing a online bookstore.
 
 ## sneak peek
 
-## admin Dashboard
+admin Dashboard
 
 ![Application admin dashboard](./images/admin_dashboard.png)
 
-## index page show all products
+index page show all products
 
 ![Application indexpage](./images/indexpage.png)
 
-## Carts Page show the users carts
+Carts Page show the users carts
 
 ![Application carts page](./images/cartspage.png)
 
-## Orders page show the orders status
+Orders page show the orders status
 
 ![Application orders page](./images/orderspage.png)
 
-## User Index page
+User Index page
 
 ![Application User Index page](./images/userIndexPage.png)
 
