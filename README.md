@@ -4,6 +4,7 @@ This is a Node.js project for managing a online bookstore.
 
 ## Features
 
+
 ## Admin manage bookStore
 
 - Admin Dashboard( Show revenue, sales stats, orders by status, Product status, Add new products, update product)
@@ -54,10 +55,11 @@ To get a local copy up and running follow these simple example steps.
 
 #### Set up your own copy locally
 
-- Clone [the GitHub Repository](https://github.com/samiullahbahadur/Bookstore_node)
+- Clone [the GitHub Repository](https://github.com/samiullahbahadur/Bookstore_nodejs)
 - Go to the Project `cd Bookstor`
 - Run `npm install` to install the _dependencies_
 - Run `npm start` to run the live server.
+
 
 ## About me
 
@@ -72,3 +74,6 @@ Feel free to check the [issues page](../../issues/).
 ## Show your support
 
 Give a ⭐️ if you like this project!
+
+
+
