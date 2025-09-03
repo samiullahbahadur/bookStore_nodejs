@@ -26,11 +26,25 @@ This is a Node.js project for managing a online bookstore.
 
 ## sneak peek
 
+## admin Dashboard
+
 ![Application admin dashboard](./images/admin_dashboard.png)
-![Application index ](./images/index.png)
+
+## index page show all products
+
 ![Application indexpage](./images/indexpage.png)
+
+## Carts Page show the users carts
+
 ![Application carts page](./images/cartspage.png)
+
+## Orders page show the orders status
+
 ![Application orders page](./images/orderspage.png)
+
+## User Index page
+
+![Application User Index page](./images/userIndexPage.png)
 
 ## Getting Started
 
@@ -46,12 +60,6 @@ To get a local copy up and running follow these simple example steps.
 - Run `npm install` to install the _dependencies_
 - Run `npm start` to run the live server.
 
-#### Set up your own copy locally
-
-- Clone [the GitHub Repository](https://github.com/samiullahbahadur/Bookstore_nodejs)
-- Go to the Project `cd Bookstor`
-- Run `npm install` to install the _dependencies_
-- Run `npm start` to run the live server.
 
 ## About me
 
