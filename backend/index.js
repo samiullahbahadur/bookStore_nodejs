@@ -7,7 +7,7 @@ import cartRoutes from "./routes/cart.route.js";
 import orderRoutes from "./routes/order.route.js";
 import invoiceRoutes from "./routes/invoice.router.js";
 
-const app = express();
+export const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -36,6 +36,8 @@ app.use("/carts", cartRoutes);
 app.use("/orders", orderRoutes);
 app.use("/invoice", invoiceRoutes);
 
-app.listen(5000, () => {
-  console.log("Server is running");
-});
+// app.listen(5000, () => {
+//   console.log("Server is running");
+// });
+
+export default app;

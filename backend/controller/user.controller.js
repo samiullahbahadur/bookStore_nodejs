@@ -32,12 +32,14 @@ export const createUser = async (req, res) => {
       password,
       photo,
     });
+    // await newUser.reload();
     const token = generateToken(newUser);
     newUser.token = token;
     await newUser.save();
-    console.log("BODY:", req.body);
-    console.log("FILE:", req.file);
+    // console.log("BODY:", req.body);
+    // console.log("FILE:", req.file);
     res.status(201).json({
+      success: true,
       message: "User created successfully",
       newUser: {
         id: newUser.id,
@@ -104,18 +106,20 @@ export const logoutUser = async (req, res) => {
 export const deleteUser = async (req, res) => {
   try {
     const userId = req.params.id;
+
     const user = await db.User.findByPk(userId);
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
+
     if (user.photo) {
       const imagePath = path.join("uploads", path.basename(user.photo));
       if (fs.existsSync(imagePath)) {
         fs.unlinkSync(imagePath);
       }
     }
-    await user.destroy();
 
+    await user.destroy();
     res.status(200).json({ message: "User deleted successfully" });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -132,6 +136,8 @@ export const updateUser = async (req, res) => {
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
+
+  
 
     // Handle photo upload & remove old photo if exists
     if (req.file) {
