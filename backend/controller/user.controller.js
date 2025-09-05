@@ -7,9 +7,15 @@ const { User } = db;
 export const getUsers = async (req, res) => {
   try {
     const users = await User.findAll();
-    res.status(201).json(users);
+    res.status(201).json({
+      success: true,
+      data: users,
+    });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({
+      success: false,
+      message: "DB error",
+    });
   }
 };
 
@@ -23,21 +29,19 @@ export const createUser = async (req, res) => {
       return res.status(400).json({ message: "Email already exists" });
     }
 
-    //  const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = await User.create({
       name,
       username,
       email,
-      // password: hashedPassword,
+
       password,
       photo,
     });
-    // await newUser.reload();
+
     const token = generateToken(newUser);
     newUser.token = token;
     await newUser.save();
-    // console.log("BODY:", req.body);
-    // console.log("FILE:", req.file);
+
     res.status(201).json({
       success: true,
       message: "User created successfully",
@@ -136,8 +140,6 @@ export const updateUser = async (req, res) => {
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
-
-  
 
     // Handle photo upload & remove old photo if exists
     if (req.file) {
