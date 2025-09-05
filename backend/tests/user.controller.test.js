@@ -1,15 +1,17 @@
 import { jest } from "@jest/globals";
+// Mock generateToken BEFORE importing the controller
+jest.mock("../utils/generateToken.js", () => ({
+  __esModule: true,
+  default: jest.fn().mockReturnValue("fake-jwt-token"),
+}));
+
 import { getUsers, createUser } from "../controller/user.controller.js";
 import db from "../models/index.js";
-import * as tokenUtils from "../utils/generateToken.js";
 
 const { User } = db;
 
 // Mock req & res
-const mockRequest = (body = {}, file = null) => ({
-  body,
-  file,
-});
+const mockRequest = (body = {}, file = null) => ({ body, file });
 const mockResponse = () => {
   const res = {};
   res.status = jest.fn().mockReturnValue(res);
@@ -73,7 +75,7 @@ describe("User Controller", () => {
     };
     jest.spyOn(User, "create").mockResolvedValue(fakeUser);
 
-    jest.spyOn(tokenUtils, "generateToken").mockReturnValue("fake-jwt-token");
+    // ✅ No need to spy on generateToken; already mocked
 
     await createUser(req, res);
 
@@ -98,7 +100,7 @@ describe("User Controller", () => {
         name: "Test",
         username: "ali",
       },
-      token: "fake-jwt-token",
+      token: "fake-jwt-token", // ✅ this should now pass
     });
   });
 
