@@ -1,17 +1,29 @@
 import { jest } from "@jest/globals";
-// Mock generateToken BEFORE importing the controller
-jest.mock("../utils/generateToken.js", () => ({
+
+// Mock generateToken first
+jest.unstable_mockModule("../utils/generateToken.js", () => ({
   __esModule: true,
-  default: jest.fn().mockReturnValue("fake-jwt-token"),
+  default: jest.fn(() => "fake-jwt-token"),
 }));
 
-import { getUsers, createUser } from "../controller/user.controller.js";
-import db from "../models/index.js";
+// Mock bcrypt BEFORE importing
+jest.unstable_mockModule("bcrypt", () => ({
+  __esModule: true,
+  default: { compare: jest.fn() }, // default import
+}));
 
+// Now dynamically import modules AFTER mocks
+const dbModule = await import("../models/index.js");
+const controller = await import("../controller/user.controller.js");
+const bcryptModule = await import("bcrypt"); // import mocked bcrypt
+
+const db = dbModule.default;
 const { User } = db;
+const { loginUser, createUser, getUsers } = controller;
+const bcrypt = bcryptModule.default;
 
-// Mock req & res
-const mockRequest = (body = {}, file = null) => ({ body, file });
+// Mock req & res helpers
+const mockRequest = (body = {}) => ({ body });
 const mockResponse = () => {
   const res = {};
   res.status = jest.fn().mockReturnValue(res);
@@ -75,8 +87,6 @@ describe("User Controller", () => {
     };
     jest.spyOn(User, "create").mockResolvedValue(fakeUser);
 
-    // ✅ No need to spy on generateToken; already mocked
-
     await createUser(req, res);
 
     expect(User.findOne).toHaveBeenCalledWith({
@@ -100,7 +110,7 @@ describe("User Controller", () => {
         name: "Test",
         username: "ali",
       },
-      token: "fake-jwt-token", // ✅ this should now pass
+      token: "fake-jwt-token", // ✅ now always mocked
     });
   });
 
@@ -128,5 +138,60 @@ describe("User Controller", () => {
 
     expect(res.status).toHaveBeenCalledWith(500);
     expect(res.json).toHaveBeenCalledWith({ error: "DB error" });
+  });
+
+  // --- loginUser tests ---
+
+  test("should login successfully with valid credentials", async () => {
+    const req = mockRequest({
+      email: "test@example.com",
+      password: "test@1234",
+    });
+    const res = mockResponse();
+
+    const fakeUser = {
+      id: 1,
+      name: "Test",
+      username: "ali",
+      email: "test@example.com",
+      password: "hashedpassword",
+      photo: null,
+      isAdmin: false,
+      save: jest.fn(),
+    };
+
+    jest.spyOn(User, "findOne").mockResolvedValue(fakeUser);
+    bcrypt.compare.mockResolvedValue(true); // ✅ correct password
+
+    await loginUser(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith({
+      success: true,
+      message: "Login Successful",
+      user: {
+        id: 1,
+        name: "Test",
+        username: "ali",
+        email: "test@example.com",
+        photo: null,
+        isAdmin: false,
+      },
+      token: "fake-jwt-token",
+    });
+  });
+
+  test("should return 401 if password is invalid", async () => {
+    const req = mockRequest({ email: "test@example.com", password: "wrong" });
+    const res = mockResponse();
+
+    const fakeUser = { id: 1, email: "test@example.com", password: "hashed" };
+    jest.spyOn(User, "findOne").mockResolvedValue(fakeUser);
+    bcrypt.compare.mockResolvedValue(false); // ❌ wrong password
+
+    await loginUser(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(401);
+    expect(res.json).toHaveBeenCalledWith({ message: "Invalid credential" });
   });
 });
