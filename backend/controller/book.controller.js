@@ -43,7 +43,6 @@ export const creatBooks = async (req, res) => {
     });
     res.status(201).json({
       success: true,
-
       message: "Book added successfully!",
       data: newBook,
     });
@@ -70,10 +69,10 @@ export const deleteBook = async (req, res) => {
       }
     }
     await book.destroy();
-    res.status(201).json({
+    res.status(200).json({
       id: bookId,
       success: true,
-      message: "Book deleted SuccessFully ",
+      message: "Book deleted successfully", // ✅ lowercase, no extra space
     });
   } catch (error) {
     console.log(error);
