@@ -101,7 +101,10 @@ export const logoutUser = async (req, res) => {
     user.token = null;
     await user.save();
 
-    return res.status(200).json({ message: "Logged out successfully" });
+    return res.status(200).json({
+      success: true,
+      message: "Logged out successfully",
+    });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
@@ -124,7 +127,10 @@ export const deleteUser = async (req, res) => {
     }
 
     await user.destroy();
-    res.status(200).json({ message: "User deleted successfully" });
+    res.status(200).json({
+      success: true,
+      message: "User deleted successfully",
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
