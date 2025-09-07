@@ -280,14 +280,13 @@ describe("Cart Route", () => {
   });
 
   test("should return 404 if book linked to cart item is missing", async () => {
-    // Add cartItem
     const addRes = await request(app)
       .post("/carts")
       .send({ bookId: 1, quantity: 1 });
 
     const cartItemId = addRes.body.id || addRes.body.cartItemId;
 
-    // Delete the book from DB
+    // Delete the book from DB → cascades to cartItem
     await Book.destroy({ where: { id: 1 } });
 
     const res = await request(app)
@@ -295,6 +294,6 @@ describe("Cart Route", () => {
       .send({ quantity: 2 });
 
     expect(res.status).toBe(404);
-    expect(res.body).toHaveProperty("message", "Book not found");
+    expect(res.body).toHaveProperty("message", "Cart item not found");
   });
 });
