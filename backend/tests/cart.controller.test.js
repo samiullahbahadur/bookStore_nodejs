@@ -121,4 +121,103 @@ describe("Cart Controller - Unit Tests", () => {
       });
     });
   });
+
+  // --- UpdateQuantity---
+  test("should return 400 if quantity <= 0", async () => {
+    req.body.quantity = 0;
+
+    await updateQuantity(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({
+      message: "Quantity must be greater than 0",
+    });
+  });
+
+  test("should return 404 if cart item not found", async () => {
+    jest.spyOn(CartItem, "findByPk").mockResolvedValue(null);
+    req.body.quantity = 5;
+
+    await updateQuantity(req, res);
+
+    expect(CartItem.findByPk).toHaveBeenCalledWith(1);
+    expect(res.status).toHaveBeenCalledWith(404);
+    expect(res.json).toHaveBeenCalledWith({ message: "Cart item not found" });
+  });
+
+  test("should return 404 if book not found", async () => {
+    const fakeCartItem = { id: 1, bookId: 10, quantity: 2, save: jest.fn() };
+    jest.spyOn(CartItem, "findByPk").mockResolvedValue(fakeCartItem);
+    jest.spyOn(Book, "findByPk").mockResolvedValue(null);
+    req.body.quantity = 5;
+
+    await updateQuantity(req, res);
+
+    expect(Book.findByPk).toHaveBeenCalledWith(10);
+    expect(res.status).toHaveBeenCalledWith(404);
+    expect(res.json).toHaveBeenCalledWith({ message: "Book not found" });
+  });
+
+  test("should return 400 if not enough stock when increasing", async () => {
+    const fakeCartItem = { id: 1, bookId: 1, quantity: 2, save: jest.fn() };
+    const fakeBook = { id: 1, stock: 1, save: jest.fn() };
+
+    jest.spyOn(CartItem, "findByPk").mockResolvedValue(fakeCartItem);
+    jest.spyOn(Book, "findByPk").mockResolvedValue(fakeBook);
+
+    req.body.quantity = 5; // increase by 3, stock only 1
+
+    await updateQuantity(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({
+      message: "Not enough stock available",
+    });
+  });
+
+  test("should increase quantity and decrease book stock", async () => {
+    const fakeCartItem = { id: 1, bookId: 1, quantity: 2, save: jest.fn() };
+    const fakeBook = { id: 1, stock: 10, save: jest.fn() };
+
+    jest.spyOn(CartItem, "findByPk").mockResolvedValue(fakeCartItem);
+    jest.spyOn(Book, "findByPk").mockResolvedValue(fakeBook);
+
+    req.body.quantity = 5; // increase by 3
+
+    await updateQuantity(req, res);
+
+    expect(fakeBook.stock).toBe(7); // 10 - 3
+    expect(fakeBook.save).toHaveBeenCalled();
+    expect(fakeCartItem.save).toHaveBeenCalled();
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith({
+      message: "Cart updated successfully",
+      cartItemId: 1,
+      bookId: 1,
+      quantity: 5,
+    });
+  });
+
+  test("should decrease quantity and restore book stock", async () => {
+    const fakeCartItem = { id: 1, bookId: 1, quantity: 5, save: jest.fn() };
+    const fakeBook = { id: 1, stock: 7, save: jest.fn() };
+
+    jest.spyOn(CartItem, "findByPk").mockResolvedValue(fakeCartItem);
+    jest.spyOn(Book, "findByPk").mockResolvedValue(fakeBook);
+
+    req.body.quantity = 3; // decrease by 2
+
+    await updateQuantity(req, res);
+
+    expect(fakeBook.stock).toBe(9); // 7 + 2
+    expect(fakeBook.save).toHaveBeenCalled();
+    expect(fakeCartItem.save).toHaveBeenCalled();
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith({
+      message: "Cart updated successfully",
+      cartItemId: 1,
+      bookId: 1,
+      quantity: 3,
+    });
+  });
 });
