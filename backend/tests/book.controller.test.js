@@ -1,5 +1,13 @@
-import fs from "fs";
 import { jest } from "@jest/globals";
+
+// ✅ Mock fs before import
+jest.mock("fs", () => ({
+  existsSync: jest.fn(),
+  unlinkSync: jest.fn(),
+}));
+
+// ✅ Re-import mocked fs
+import fs from "fs";
 
 // ✅ Mock Sequelize Book model
 const mockBookModel = {
@@ -11,12 +19,6 @@ const mockBookModel = {
 // ✅ Mock db BEFORE importing controller
 jest.unstable_mockModule("../models/index.js", () => ({
   default: { Book: mockBookModel },
-}));
-
-// ✅ Mock fs
-jest.mock("fs", () => ({
-  existsSync: jest.fn(),
-  unlinkSync: jest.fn(),
 }));
 
 // ✅ Import controller AFTER mocks are ready
