@@ -1,25 +1,29 @@
 // tests/book.controller.test.js
-const { loginUser, createUser, getUsers, logoutUser, deleteUser, updateUser } =
-  controller;
 
 const dbModule = await import("../models/index.js");
+const controller = await import("../controller/user.controller.js");
+
+const db = dbModule.default;
+const { Book } = db;
+const { getBooks, getBookById, creatBooks, deleteBook, updateBook } =
+  controller;
 import fs from "fs";
 import { jest } from "@jest/globals";
 
 // Mock Sequelize model
-const mockBookModel = {
+Book = {
   findAll: jest.fn(),
   findByPk: jest.fn(),
   create: jest.fn(),
 };
 
-// Mock db default export
-jest.mock("../models/index.js", () => ({
-  __esModule: true,
-  default: {
-    Book: mockBookModel,
-  },
-}));
+// // Mock db default export
+// jest.mock("../models/index.js", () => ({
+//   __esModule: true,
+//   default: {
+//     Book: Book,
+//   },
+// }));
 
 // Mock fs
 jest.mock("fs", () => ({
@@ -40,19 +44,19 @@ describe("Book Controller", () => {
 
   test("getBooks returns list of books", async () => {
     const mockBooks = [{ id: 1, title: "Book 1" }];
-    mockBookModel.findAll.mockResolvedValue(mockBooks);
+    Book.findAll.mockResolvedValue(mockBooks);
 
     const req = {};
     const res = mockResponse();
     await getBooks(req, res);
 
-    expect(mockBookModel.findAll).toHaveBeenCalled();
+    expect(Book.findAll).toHaveBeenCalled();
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json).toHaveBeenCalledWith({ success: true, data: mockBooks });
   });
 
   test("getBookById returns 404 if not found", async () => {
-    mockBookModel.findByPk.mockResolvedValue(null);
+    Book.findByPk.mockResolvedValue(null);
 
     const req = { params: { id: 99 } };
     const res = mockResponse();
