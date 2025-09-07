@@ -30,19 +30,13 @@ export const addToCart = async (req, res) => {
     });
 
     if (existingItem) {
-      // Calculate how much stock to deduct
-      const additionalQuantity = quantity;
-
-      if (book.stock < additionalQuantity) {
-        return res.status(400).json({ message: "Not enough stock available" });
-      }
-
+     
       // Deduct stock
-      book.stock -= additionalQuantity;
+      book.stock -= quantity;
       await book.save();
 
       // Update cart quantity
-      existingItem.quantity += additionalQuantity;
+      existingItem.quantity += quantity;
       await existingItem.save();
 
       return res.status(200).json(existingItem);
@@ -210,7 +204,7 @@ export const updateQuantity = async (req, res) => {
 
     const oldQty = cartItem.quantity;
     const diff = quantity - oldQty; // positive if increase, negative if decrease
-    
+
     if (diff > 0) {
       // user wants more items → decrease stock
       if (book.stock < diff) {
