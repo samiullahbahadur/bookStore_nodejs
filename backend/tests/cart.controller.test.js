@@ -12,11 +12,16 @@ describe("Cart Controller - Unit Tests", () => {
   let req, res;
 
   beforeEach(() => {
-    req = { body: {}, user: { id: 1, isAdmin: false } };
+    req = {
+      params: { cartItemId: 1 }, // <-- required for removeCartItem
+      user: { id: 1, isAdmin: false },
+    };
+
     res = {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     };
+
     jest.clearAllMocks();
   });
 
