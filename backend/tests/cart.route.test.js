@@ -1,82 +1,102 @@
 import request from "supertest";
-import { jest } from "@jest/globals";
-import app from "../index.js"; // your Express app
-
-// Mock models if needed, otherwise use real test DB
+import express from "express";
+import { addToCart } from "../controller/cart.controller.js";
 import db from "../models/index.js";
-const { Book, Cart, CartItem } = db;
+
+const { User, Book, Cart, CartItem } = db;
+
+const app = express();
+app.use(express.json());
+
+// Create test user beforeAll
+let testUser;
+
+beforeAll(async () => {
+  await db.sequelize.sync({ force: true }); // recreate tables
+  testUser = await User.create({
+    id: 1,
+    name: "Test User",
+    email: "test@example.com",
+  });
+});
+
+// Inject mock user for all requests
+app.post("/carts", async (req, res) => {
+  req.user = testUser; // inject Sequelize user instance
+  try {
+    await addToCart(req, res);
+  } catch (err) {
+    console.error("Error in addToCart:", err);
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// Clear tables before each test
+beforeEach(async () => {
+  await CartItem.destroy({ where: {} });
+  await Cart.destroy({ where: {} });
+  await Book.destroy({ where: {} });
+
+  await Book.create({
+    id: 1,
+    title: "Test Book",
+    stock: 10,
+    price: 20,
+    userId: testUser.id,
+  });
+});
+
+// Close DB connection after all tests
+afterAll(async () => {
+  await db.sequelize.close();
+});
 
 describe("Cart Controller - addToCart", () => {
-  let testUser;
-  let testBook;
-
-  beforeAll(async () => {
-    // Optional: create a test user
-    testUser = { id: 1, name: "Test User" };
-
-    // Create a test book in DB
-    testBook = await Book.create({
-      title: "Test Book",
-      stock: 10,
-      price: 20,
-    });
-  });
-
-  afterAll(async () => {
-    // Clean up test data
-    await CartItem.destroy({ where: {} });
-    await Cart.destroy({ where: {} });
-    await Book.destroy({ where: {} });
-  });
-
   test("should add a new book to the cart if not already present", async () => {
     const res = await request(app)
-      .post("/carts/") // your route
-      .send({ bookId: testBook.id, quantity: 2 })
-      .set("Authorization", `Bearer testToken`) // if you have auth middleware
-      .expect(200);
+      .post("/carts")
+      .send({ bookId: 1, quantity: 2 });
 
+    expect(res.status).toBe(200);
     expect(res.body).toHaveProperty("cartId");
-    expect(res.body).toHaveProperty("bookId", testBook.id);
+    expect(res.body).toHaveProperty("bookId", 1);
     expect(res.body).toHaveProperty("quantity", 2);
 
-    const updatedBook = await Book.findByPk(testBook.id);
-    expect(updatedBook.stock).toBe(8); // stock reduced
+    const book = await Book.findByPk(1);
+    expect(book.stock).toBe(8);
   });
 
   test("should increase quantity if book already in cart", async () => {
     // First add
-    await CartItem.create({ cartId: 1, bookId: testBook.id, quantity: 2 });
+    await request(app).post("/carts").send({ bookId: 1, quantity: 2 });
 
+    // Add again
     const res = await request(app)
-      .post("/cart/add")
-      .send({ bookId: testBook.id, quantity: 3 })
-      .set("Authorization", `Bearer testToken`)
-      .expect(200);
+      .post("/carts")
+      .send({ bookId: 1, quantity: 3 });
 
+    expect(res.status).toBe(200);
     expect(res.body.quantity).toBe(5);
 
-    const updatedBook = await Book.findByPk(testBook.id);
-    expect(updatedBook.stock).toBe(5); // stock reduced again
+    const book = await Book.findByPk(1);
+    expect(book.stock).toBe(5);
   });
 
   test("should return 404 if book not found", async () => {
     const res = await request(app)
-      .post("/cart/add")
-      .send({ bookId: 9999, quantity: 1 })
-      .set("Authorization", `Bearer testToken`)
-      .expect(404);
+      .post("/carts")
+      .send({ bookId: 999, quantity: 1 });
 
+    expect(res.status).toBe(404);
     expect(res.body).toHaveProperty("message", "Book not found");
   });
 
   test("should return 400 if not enough stock", async () => {
     const res = await request(app)
-      .post("/cart/add")
-      .send({ bookId: testBook.id, quantity: 100 })
-      .set("Authorization", `Bearer testToken`)
-      .expect(400);
+      .post("/carts")
+      .send({ bookId: 1, quantity: 100 });
 
+    expect(res.status).toBe(400);
     expect(res.body).toHaveProperty("message", "Not enough stock available");
   });
 });
