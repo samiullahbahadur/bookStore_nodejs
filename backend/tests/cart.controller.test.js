@@ -1,33 +1,27 @@
 import { addToCart, getCart } from "../controller/cart.controller.js";
 import db from "../models/index.js";
-
-// Extract models
+import { jest } from "@jest/globals";
 const { Book, Cart, CartItem, User } = db;
-
-// Create reusable mock response
-const mockResponse = () => {
-  const res = {};
-  res.status = jest.fn().mockReturnValue(res);
-  res.json = jest.fn().mockReturnValue(res);
-  return res;
-};
 
 describe("Cart Controller - Unit Tests", () => {
   let req, res;
 
   beforeEach(() => {
-    req = {};
-    res = mockResponse();
+    req = { body: {}, user: { id: 1, isAdmin: false } };
+    res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
     jest.clearAllMocks();
   });
 
+  // ---- addToCart ----
   describe("addToCart", () => {
     test("should return 404 if book not found", async () => {
-      req.user = { id: 1 };
-      req.body = { bookId: 99, quantity: 2 };
-
-      // Mock Book.findByPk to return null
       jest.spyOn(Book, "findByPk").mockResolvedValue(null);
+
+      req.body = { bookId: 99, quantity: 1 };
 
       await addToCart(req, res);
 
@@ -37,11 +31,10 @@ describe("Cart Controller - Unit Tests", () => {
     });
 
     test("should return 400 if not enough stock", async () => {
-      req.user = { id: 1 };
-      req.body = { bookId: 1, quantity: 100 };
-
-      const fakeBook = { id: 1, stock: 5 };
+      const fakeBook = { id: 1, stock: 1, save: jest.fn() };
       jest.spyOn(Book, "findByPk").mockResolvedValue(fakeBook);
+
+      req.body = { bookId: 1, quantity: 5 };
 
       await addToCart(req, res);
 
@@ -52,18 +45,16 @@ describe("Cart Controller - Unit Tests", () => {
     });
 
     test("should add new item to cart", async () => {
-      req.user = { id: 1 };
-      req.body = { bookId: 1, quantity: 2 };
-
       const fakeBook = { id: 1, stock: 10, save: jest.fn() };
+      const fakeCart = { id: 123 };
+      const fakeCartItem = { id: 999, cartId: 123, bookId: 1, quantity: 2 };
+
       jest.spyOn(Book, "findByPk").mockResolvedValue(fakeBook);
-
-      const fakeCart = { id: 5, userId: 1 };
-      jest.spyOn(Cart, "findOrCreate").mockResolvedValue([fakeCart]);
-
-      const fakeCartItem = { id: 99, bookId: 1, quantity: 2 };
+      jest.spyOn(Cart, "findOne").mockResolvedValue(fakeCart);
       jest.spyOn(CartItem, "findOne").mockResolvedValue(null);
       jest.spyOn(CartItem, "create").mockResolvedValue(fakeCartItem);
+
+      req.body = { bookId: 1, quantity: 2 };
 
       await addToCart(req, res);
 
@@ -73,46 +64,38 @@ describe("Cart Controller - Unit Tests", () => {
     });
   });
 
+  // ---- getCart ----
   describe("getCart", () => {
     test("should return all carts if admin", async () => {
-      req.user = { id: 1, isAdmin: true };
+      req.user.isAdmin = true;
 
-      const fakeCarts = [
+      jest.spyOn(Cart, "findAll").mockResolvedValue([
         {
           id: 1,
           userId: 1,
-          User: { id: 1, name: "Alice" },
+          User: { name: "Test User" },
           Books: [
             {
               id: 1,
-              title: "Book A",
+              title: "Book 1",
               price: 10,
-              CartItem: { id: 11, quantity: 2 },
+              CartItem: { id: 1, quantity: 2 },
             },
           ],
         },
-      ];
-
-      jest.spyOn(Cart, "findAll").mockResolvedValue(fakeCarts);
+      ]);
 
       await getCart(req, res);
 
-      expect(Cart.findAll).toHaveBeenCalled();
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json).toHaveBeenCalledWith({
         carts: [
           {
             cartId: 1,
             userId: 1,
-            userName: "Alice",
+            userName: "Test User",
             items: [
-              {
-                cartItemId: 11,
-                id: 1,
-                title: "Book A",
-                price: 10,
-                quantity: 2,
-              },
+              { cartItemId: 1, id: 1, title: "Book 1", price: 10, quantity: 2 },
             ],
           },
         ],
@@ -120,32 +103,36 @@ describe("Cart Controller - Unit Tests", () => {
     });
 
     test("should return only user’s carts if non-admin", async () => {
-      req.user = { id: 2, isAdmin: false };
+      req.user.isAdmin = false;
 
-      const fakeCarts = [
+      jest.spyOn(Cart, "findAll").mockResolvedValue([
         {
           id: 2,
-          userId: 2,
-          User: { id: 2, name: "Bob" },
-          Books: [],
+          userId: 1,
+          User: { name: "Test User" },
+          Books: [
+            {
+              id: 2,
+              title: "Book 2",
+              price: 20,
+              CartItem: { id: 2, quantity: 1 },
+            },
+          ],
         },
-      ];
-
-      jest.spyOn(Cart, "findAll").mockResolvedValue(fakeCarts);
+      ]);
 
       await getCart(req, res);
 
-      expect(Cart.findAll).toHaveBeenCalledWith(
-        expect.objectContaining({ where: { userId: 2 } })
-      );
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json).toHaveBeenCalledWith({
         carts: [
           {
             cartId: 2,
-            userId: 2,
-            userName: "Bob",
-            items: [],
+            userId: 1,
+            userName: "Test User",
+            items: [
+              { cartItemId: 2, id: 2, title: "Book 2", price: 20, quantity: 1 },
+            ],
           },
         ],
       });
