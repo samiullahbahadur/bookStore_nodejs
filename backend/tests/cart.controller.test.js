@@ -2,7 +2,7 @@ import { jest } from "@jest/globals";
 import { addToCart, getCart } from "../controller/cart.controller.js";
 import db from "../models/index.js";
 
-const { Book, Cart, CartItem, User } = db;
+const { Book, Cart, CartItem } = db;
 
 describe("Cart Controller - Unit Tests", () => {
   let req, res;
@@ -13,7 +13,6 @@ describe("Cart Controller - Unit Tests", () => {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     };
-
     jest.clearAllMocks();
   });
 
@@ -21,6 +20,7 @@ describe("Cart Controller - Unit Tests", () => {
   describe("addToCart", () => {
     test("should return 404 if book not found", async () => {
       jest.spyOn(Book, "findByPk").mockResolvedValue(null);
+      jest.spyOn(Cart, "findOne").mockResolvedValue({ id: 1 });
 
       req.body = { bookId: 99, quantity: 1 };
 
@@ -34,6 +34,8 @@ describe("Cart Controller - Unit Tests", () => {
     test("should return 400 if not enough stock", async () => {
       const fakeBook = { id: 1, stock: 1, save: jest.fn() };
       jest.spyOn(Book, "findByPk").mockResolvedValue(fakeBook);
+      jest.spyOn(Cart, "findOne").mockResolvedValue({ id: 1 });
+      jest.spyOn(CartItem, "findOne").mockResolvedValue(null);
 
       req.body = { bookId: 1, quantity: 5 };
 
@@ -70,7 +72,7 @@ describe("Cart Controller - Unit Tests", () => {
     test("should return all carts if admin", async () => {
       req.user.isAdmin = true;
 
-      jest.spyOn(Cart, "findAll").mockResolvedValue([
+      const mockCarts = [
         {
           id: 1,
           userId: 1,
@@ -84,7 +86,9 @@ describe("Cart Controller - Unit Tests", () => {
             },
           ],
         },
-      ]);
+      ];
+
+      jest.spyOn(Cart, "findAll").mockResolvedValue(mockCarts);
 
       await getCart(req, res);
 
@@ -106,7 +110,7 @@ describe("Cart Controller - Unit Tests", () => {
     test("should return only user’s carts if non-admin", async () => {
       req.user.isAdmin = false;
 
-      jest.spyOn(Cart, "findAll").mockResolvedValue([
+      const mockCarts = [
         {
           id: 2,
           userId: 1,
@@ -120,7 +124,9 @@ describe("Cart Controller - Unit Tests", () => {
             },
           ],
         },
-      ]);
+      ];
+
+      jest.spyOn(Cart, "findAll").mockResolvedValue(mockCarts);
 
       await getCart(req, res);
 
