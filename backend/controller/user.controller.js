@@ -7,9 +7,15 @@ const { User } = db;
 export const getUsers = async (req, res) => {
   try {
     const users = await User.findAll();
-    res.status(201).json(users);
+    res.status(201).json({
+      success: true,
+      data: users,
+    });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({
+      success: false,
+      message: "DB error",
+    });
   }
 };
 
@@ -23,21 +29,21 @@ export const createUser = async (req, res) => {
       return res.status(400).json({ message: "Email already exists" });
     }
 
-    //  const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = await User.create({
       name,
       username,
       email,
-      // password: hashedPassword,
+
       password,
       photo,
     });
+
     const token = generateToken(newUser);
     newUser.token = token;
     await newUser.save();
-    console.log("BODY:", req.body);
-    console.log("FILE:", req.file);
+
     res.status(201).json({
+      success: true,
       message: "User created successfully",
       newUser: {
         id: newUser.id,
@@ -95,7 +101,10 @@ export const logoutUser = async (req, res) => {
     user.token = null;
     await user.save();
 
-    return res.status(200).json({ message: "Logged out successfully" });
+    return res.status(200).json({
+      success: true,
+      message: "Logged out successfully",
+    });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
@@ -104,19 +113,24 @@ export const logoutUser = async (req, res) => {
 export const deleteUser = async (req, res) => {
   try {
     const userId = req.params.id;
+
     const user = await db.User.findByPk(userId);
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
+
     if (user.photo) {
       const imagePath = path.join("uploads", path.basename(user.photo));
       if (fs.existsSync(imagePath)) {
         fs.unlinkSync(imagePath);
       }
     }
-    await user.destroy();
 
-    res.status(200).json({ message: "User deleted successfully" });
+    await user.destroy();
+    res.status(200).json({
+      success: true,
+      message: "User deleted successfully",
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

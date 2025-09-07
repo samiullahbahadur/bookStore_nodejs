@@ -30,7 +30,7 @@ router.post(
 );
 router.post("/auth/login", validateLogin, loginUser);
 router.post("/auth/logout", authenticate, logoutUser);
-router.delete("/:id", deleteUser);
+router.delete("/:id", authenticate, deleteUser);
 router.put(
   "/:id",
   upload.single("photo"),
