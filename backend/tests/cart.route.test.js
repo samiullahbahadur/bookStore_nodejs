@@ -191,4 +191,110 @@ describe("Cart Route", () => {
     expect(res.status).toBe(403);
     expect(res.body).toHaveProperty("message", "Forbidden: Not your cart item");
   });
+
+  // --- updateQuantity tests ---
+  test("should update quantity and decrease stock when increased", async () => {
+    // Add 2 items
+    const addRes = await request(app)
+      .post("/carts")
+      .send({ bookId: 1, quantity: 2 });
+
+    const cartItemId = addRes.body.id || addRes.body.cartItemId;
+
+    // Update to 4
+    const res = await request(app)
+      .put(`/carts/${cartItemId}`)
+      .send({ quantity: 4 });
+
+    expect(res.status).toBe(200);
+    expect(res.body).toMatchObject({
+      message: "Cart updated successfully",
+      cartItemId: cartItemId,
+      bookId: 1,
+      quantity: 4,
+    });
+
+    const book = await Book.findByPk(1);
+    expect(book.stock).toBe(6); // started at 10, -2, then -2 more
+  });
+
+  test("should update quantity and restore stock when decreased", async () => {
+    // Add 5 items
+    const addRes = await request(app)
+      .post("/carts")
+      .send({ bookId: 1, quantity: 5 });
+
+    const cartItemId = addRes.body.id || addRes.body.cartItemId;
+
+    // Update to 2
+    const res = await request(app)
+      .put(`/carts/${cartItemId}`)
+      .send({ quantity: 2 });
+
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveProperty("quantity", 2);
+
+    const book = await Book.findByPk(1);
+    expect(book.stock).toBe(8); // 10-5 = 5, then +3 back = 8
+  });
+
+  test("should return 400 if quantity <= 0", async () => {
+    const addRes = await request(app)
+      .post("/carts")
+      .send({ bookId: 1, quantity: 1 });
+
+    const cartItemId = addRes.body.id || addRes.body.cartItemId;
+
+    const res = await request(app)
+      .put(`/carts/${cartItemId}`)
+      .send({ quantity: 0 });
+
+    expect(res.status).toBe(400);
+    expect(res.body).toHaveProperty(
+      "message",
+      "Quantity must be greater than 0"
+    );
+  });
+
+  test("should return 400 if not enough stock when increasing", async () => {
+    const addRes = await request(app)
+      .post("/carts")
+      .send({ bookId: 1, quantity: 9 });
+
+    const cartItemId = addRes.body.id || addRes.body.cartItemId;
+
+    // Try to bump to 11 (needs +2, only 1 left in stock)
+    const res = await request(app)
+      .put(`/carts/${cartItemId}`)
+      .send({ quantity: 11 });
+
+    expect(res.status).toBe(400);
+    expect(res.body).toHaveProperty("message", "Not enough stock available");
+  });
+
+  test("should return 404 if cart item not found", async () => {
+    const res = await request(app).put("/carts/999").send({ quantity: 5 });
+
+    expect(res.status).toBe(404);
+    expect(res.body).toHaveProperty("message", "Cart item not found");
+  });
+
+  test("should return 404 if book linked to cart item is missing", async () => {
+    // Add cartItem
+    const addRes = await request(app)
+      .post("/carts")
+      .send({ bookId: 1, quantity: 1 });
+
+    const cartItemId = addRes.body.id || addRes.body.cartItemId;
+
+    // Delete the book from DB
+    await Book.destroy({ where: { id: 1 } });
+
+    const res = await request(app)
+      .put(`/carts/${cartItemId}`)
+      .send({ quantity: 2 });
+
+    expect(res.status).toBe(404);
+    expect(res.body).toHaveProperty("message", "Book not found");
+  });
 });
