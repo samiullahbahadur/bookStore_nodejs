@@ -1,6 +1,7 @@
+import { jest } from "@jest/globals";
 import { addToCart, getCart } from "../controller/cart.controller.js";
 import db from "../models/index.js";
-import { jest } from "@jest/globals";
+
 const { Book, Cart, CartItem, User } = db;
 
 describe("Cart Controller - Unit Tests", () => {
