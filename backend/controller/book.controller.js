@@ -1,5 +1,5 @@
 import db from "../models/index.js";
-import fs from "fs";
+import * as fs from "fs"; // ✅ correct ESM import
 import path from "path";
 const { Book } = db;
 

@@ -1,6 +1,6 @@
 import { jest } from "@jest/globals";
 
-// Mock fs module
+// Mock fs before importing controller
 jest.unstable_mockModule("fs", () => ({
   existsSync: jest.fn(),
   unlinkSync: jest.fn(),
@@ -13,12 +13,13 @@ const mockBookModel = {
   create: jest.fn(),
 };
 
+// Mock db
 jest.unstable_mockModule("../models/index.js", () => ({
   default: { Book: mockBookModel },
 }));
 
 // Import fs AFTER mocking
-const fs = await import("fs");
+const fs = await import("fs"); // ✅ namespace import
 
 // Import controller AFTER mocks
 const controller = await import("../controller/book.controller.js");
@@ -91,13 +92,16 @@ describe("Book Controller", () => {
   test("deleteBook removes book and file", async () => {
     const mockBook = { id: 1, photo: "test.jpg", destroy: jest.fn() };
     mockBookModel.findByPk.mockResolvedValue(mockBook);
-    fs.existsSync.mockReturnValue(true); // ✅ works now
+    fs.existsSync.mockReturnValue(true);
 
     const req = { params: { id: 1 } };
     const res = mockResponse();
 
     await deleteBook(req, res);
 
+    expect(fs.existsSync).toHaveBeenCalledWith(
+      expect.stringContaining("test.jpg")
+    );
     expect(fs.unlinkSync).toHaveBeenCalled();
     expect(mockBook.destroy).toHaveBeenCalled();
     expect(res.status).toHaveBeenCalledWith(200);
@@ -109,12 +113,7 @@ describe("Book Controller", () => {
   });
 
   test("updateBook updates fields", async () => {
-    const mockBook = {
-      id: 1,
-      title: "Old",
-      save: jest.fn(),
-      photo: null,
-    };
+    const mockBook = { id: 1, title: "Old", save: jest.fn(), photo: null };
     mockBookModel.findByPk.mockResolvedValue(mockBook);
 
     const req = {
