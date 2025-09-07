@@ -129,11 +129,6 @@ export const removeCartItem = async (req, res) => {
     if (!req.user.isAdmin && cartItem.Cart.userId !== req.user.id) {
       return res.status(403).json({ message: "Forbidden: Not your cart item" });
     }
-    // if (req.user.isAdmin) {
-    //   return res
-    //     .status(403)
-    //     .json({ message: " you can delete your  cart items" });
-    // }
     // restore stock
     if (cartItem.Book) {
       cartItem.Book.stock += cartItem.quantity;

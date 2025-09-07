@@ -1,6 +1,10 @@
 import request from "supertest";
 import express from "express";
-import { addToCart, getCart } from "../controller/cart.controller.js";
+import {
+  addToCart,
+  getCart,
+  removeCartItem,
+} from "../controller/cart.controller.js";
 import db from "../models/index.js";
 
 const { User, Book, Cart, CartItem } = db;
@@ -30,27 +34,20 @@ beforeAll(async () => {
   });
 });
 
-// Inject mock user for POST /carts
+// Inject mock user for routes
 app.post("/carts", async (req, res) => {
   req.user = testUser; // always logged-in as testUser for addToCart
-  try {
-    await addToCart(req, res);
-  } catch (err) {
-    console.error("Error in addToCart:", err);
-    res.status(500).json({ message: err.message });
-  }
+  await addToCart(req, res);
 });
 
-// Inject mock user for GET /carts
 app.get("/carts", async (req, res) => {
-  // simulate user from request header
   req.user = req.headers.mockuser ? JSON.parse(req.headers.mockuser) : testUser;
-  try {
-    await getCart(req, res);
-  } catch (err) {
-    console.error("Error in getCart:", err);
-    res.status(500).json({ message: err.message });
-  }
+  await getCart(req, res);
+});
+
+app.delete("/carts/:cartItemId", async (req, res) => {
+  req.user = req.headers.mockuser ? JSON.parse(req.headers.mockuser) : testUser; // default testUser
+  await removeCartItem(req, res);
 });
 
 // Clear tables before each test
@@ -123,7 +120,6 @@ describe("Cart Route", () => {
 
   // --- getCart tests ---
   test("should return only the logged-in user's cart (non-admin)", async () => {
-    // first add books into cart
     await request(app).post("/carts").send({ bookId: 1, quantity: 2 });
 
     const res = await request(app)
@@ -138,7 +134,6 @@ describe("Cart Route", () => {
   });
 
   test("should return all carts if user is admin", async () => {
-    // Add a book to testUser's cart
     await request(app).post("/carts").send({ bookId: 1, quantity: 1 });
 
     const res = await request(app)
@@ -148,5 +143,46 @@ describe("Cart Route", () => {
     expect(res.status).toBe(200);
     expect(res.body.carts.length).toBeGreaterThan(0);
     expect(res.body.carts[0]).toHaveProperty("items");
+  });
+
+  // --- removeCartItem tests ---
+  test("should remove a cart item and restore stock", async () => {
+    const addRes = await request(app)
+      .post("/carts")
+      .send({ bookId: 1, quantity: 2 });
+
+    const cartItemId = addRes.body.id || addRes.body.cartItemId;
+
+    const res = await request(app).delete(`/carts/${cartItemId}`);
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual({
+      message: "Cart item removed successfully",
+      cartItemId: String(cartItemId),
+    });
+
+    const book = await Book.findByPk(1);
+    expect(book.stock).toBe(10);
+  });
+
+  test("should return 404 if cart item not found", async () => {
+    const res = await request(app).delete("/carts/999");
+    expect(res.status).toBe(404);
+    expect(res.body).toHaveProperty("message", "Cart item not found From DB");
+  });
+
+  test("should return 403 if user tries to remove someone else’s item", async () => {
+    const addRes = await request(app)
+      .post("/carts")
+      .send({ bookId: 1, quantity: 1 });
+
+    const cartItemId = addRes.body.id || addRes.body.cartItemId;
+
+    const res = await request(app)
+      .delete(`/carts/${cartItemId}`)
+      .set("mockUser", JSON.stringify({ id: 3, isAdmin: false }));
+
+    expect(res.status).toBe(403);
+    expect(res.body).toHaveProperty("message", "Forbidden: Not your cart item");
   });
 });
