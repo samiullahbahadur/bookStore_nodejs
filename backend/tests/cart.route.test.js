@@ -73,7 +73,7 @@ afterAll(async () => {
   await db.sequelize.close();
 });
 
-describe("Cart Controller", () => {
+describe("Cart Route", () => {
   // --- addToCart tests ---
   test("should add a new book to the cart if not already present", async () => {
     const res = await request(app)
