@@ -4,6 +4,7 @@ import {
   addToCart,
   getCart,
   removeCartItem,
+  updateQuantity,
 } from "../controller/cart.controller.js";
 import db from "../models/index.js";
 
@@ -48,6 +49,11 @@ app.get("/carts", async (req, res) => {
 app.delete("/carts/:cartItemId", async (req, res) => {
   req.user = req.headers.mockuser ? JSON.parse(req.headers.mockuser) : testUser; // default testUser
   await removeCartItem(req, res);
+});
+
+app.put("/carts/:cartItemId", async (req, res) => {
+  req.user = req.headers.mockuser ? JSON.parse(req.headers.mockuser) : testUser;
+  await updateQuantity(req, res);
 });
 
 // Clear tables before each test
