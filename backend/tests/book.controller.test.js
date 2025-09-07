@@ -1,32 +1,31 @@
 import { jest } from "@jest/globals";
 
-// ✅ Mock fs before import
-jest.mock("fs", () => ({
+// Mock fs module
+jest.unstable_mockModule("fs", () => ({
   existsSync: jest.fn(),
   unlinkSync: jest.fn(),
 }));
 
-// ✅ Re-import mocked fs
-import fs from "fs";
-
-// ✅ Mock Sequelize Book model
+// Mock Book model
 const mockBookModel = {
   findAll: jest.fn(),
   findByPk: jest.fn(),
   create: jest.fn(),
 };
 
-// ✅ Mock db BEFORE importing controller
 jest.unstable_mockModule("../models/index.js", () => ({
   default: { Book: mockBookModel },
 }));
 
-// ✅ Import controller AFTER mocks are ready
+// Import fs AFTER mocking
+const fs = await import("fs");
+
+// Import controller AFTER mocks
 const controller = await import("../controller/book.controller.js");
 const { getBooks, getBookById, creatBooks, deleteBook, updateBook } =
   controller;
 
-// helper to create mock res
+// --- Mock response helper ---
 const mockResponse = () => {
   const res = {};
   res.status = jest.fn().mockReturnValue(res);
@@ -41,9 +40,8 @@ describe("Book Controller", () => {
     const mockBooks = [{ id: 1, title: "Book 1" }];
     mockBookModel.findAll.mockResolvedValue(mockBooks);
 
-    const req = {};
     const res = mockResponse();
-    await getBooks(req, res);
+    await getBooks({}, res);
 
     expect(mockBookModel.findAll).toHaveBeenCalled();
     expect(res.status).toHaveBeenCalledWith(200);
@@ -53,9 +51,8 @@ describe("Book Controller", () => {
   test("getBookById returns 404 if not found", async () => {
     mockBookModel.findByPk.mockResolvedValue(null);
 
-    const req = { params: { id: 99 } };
     const res = mockResponse();
-    await getBookById(req, res);
+    await getBookById({ params: { id: 99 } }, res);
 
     expect(res.status).toHaveBeenCalledWith(404);
     expect(res.json).toHaveBeenCalledWith({ message: "Book not found" });
@@ -94,7 +91,7 @@ describe("Book Controller", () => {
   test("deleteBook removes book and file", async () => {
     const mockBook = { id: 1, photo: "test.jpg", destroy: jest.fn() };
     mockBookModel.findByPk.mockResolvedValue(mockBook);
-    fs.existsSync.mockReturnValue(true);
+    fs.existsSync.mockReturnValue(true); // ✅ works now
 
     const req = { params: { id: 1 } };
     const res = mockResponse();
