@@ -3,6 +3,7 @@ import {
   addToCart,
   getCart,
   removeCartItem,
+  updateQuantity,
 } from "../controller/cart.controller.js";
 import db from "../models/index.js";
 
