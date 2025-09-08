@@ -9,6 +9,7 @@ import Auth from "./pages/authPage/Authpage";
 import ProfilePage from "./pages/authPage/profilePage";
 import ChangePassword from "./pages/authPage/changePassword";
 import ForgotPassword from "./pages/authPage/forgotPassword";
+import ResetPassword from "./pages/authPage/resetPassword";
 
 import ProtectedRoute from "./components/protectedRoute";
 import AdminRoute from "./pages/admin/AdminRoute";
@@ -85,6 +86,14 @@ const App = () => {
             element={
               <ProtectedRoute>
                 <ForgotPassword />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/reset-password"
+            element={
+              <ProtectedRoute>
+                <ResetPassword />
               </ProtectedRoute>
             }
           />
