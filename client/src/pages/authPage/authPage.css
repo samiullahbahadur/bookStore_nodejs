@@ -72,15 +72,60 @@
   border-color: #6366f1; /* indigo-500 */
   box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
 }
-
 .profileActions_auth {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  margin-top: 10px;
+  margin-top: 1em;
+  display: grid;
+  grid-template-columns: 1fr; /* button full width */
+  gap: 0.8rem;
 }
-/* Buttons */
+
 .profileActions_auth button {
+  width: 100%;
+  padding: 12px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  background: #6366f1; /* indigo-500 */
+  color: #fff;
+  border: none;
+  transition: background 0.2s ease-in-out;
+}
+
+.profileActions_auth button:hover {
+  background: #4f46e5; /* darker indigo */
+}
+
+/* bottom links row */
+.auth-links {
+  display: flex;
+  justify-content: space-between; /* left + right */
+  align-items: center;
+  font-size: 0.9rem;
+}
+
+.auth-links p {
+  margin: 0;
+  cursor: pointer;
+  color: #374151;
+}
+
+.auth-links b {
+  color: #007bff;
+}
+
+.forgot-link {
+  text-decoration: none;
+  color: #007bff;
+  transition: color 0.2s ease-in-out;
+}
+
+.forgot-link:hover {
+  color: #0056b3;
+}
+
+/* Buttons */
+/* .profileActions_auth button {
   border-radius: 15px;
   padding: 0px 12px;
   font-weight: 600;
@@ -89,16 +134,18 @@
   background: #e5e7eb;
   color: #111827;
   border: none;
-}
-.authForm button[type="submit"]:hover {
+} */
+
+/* .authForm button[type="submit"]:hover {
   background: #354056;
-  color: #fff; /* indigo-500 */
-}
-.authForm p {
+  color: #fff; 
+} */
+
+/* .authForm p {
   font-size: 14px;
   text-align: center;
   cursor: pointer;
-}
+} */
 .error {
   color: red;
   font-size: 0.8rem;
