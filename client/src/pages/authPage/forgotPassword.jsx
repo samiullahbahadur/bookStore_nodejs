@@ -1,60 +1,39 @@
-// ResetPassword.jsx
 import { useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { resetPasswordAPI } from "../api/userApi";
-import { toast } from "react-toastify";
+import { useDispatch, useSelector } from "react-redux";
+import { forgotPassword } from "./authSlice";
+import "./authPage.css";
 
-const ResetPassword = () => {
-  const { token } = useParams();
-  const navigate = useNavigate();
-  const [formData, setFormData] = useState({
-    newPassword: "",
-    confirmPassword: "",
-  });
-  const [loading, setLoading] = useState(false);
+const ForgotPasswordPage = () => {
+  const dispatch = useDispatch();
+  const { loading, error } = useSelector((state) => state.auth);
 
-  const handleChange = (e) =>
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  const [email, setEmail] = useState("");
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    if (formData.newPassword !== formData.confirmPassword) {
-      return toast.error("Passwords do not match");
-    }
-    setLoading(true);
-    try {
-      await resetPasswordAPI(token, formData.newPassword);
-      toast.success("Password reset successfully!");
-      navigate("/login");
-    } catch (err) {
-      toast.error(err.response?.data?.error || "Reset failed");
-    } finally {
-      setLoading(false);
-    }
+    dispatch(forgotPassword(email));
   };
 
   return (
-    <form onSubmit={handleSubmit} className="form-container">
-      <h2>Reset Password</h2>
-      <input
-        type="password"
-        name="newPassword"
-        placeholder="New Password"
-        value={formData.newPassword}
-        onChange={handleChange}
-      />
-      <input
-        type="password"
-        name="confirmPassword"
-        placeholder="Confirm Password"
-        value={formData.confirmPassword}
-        onChange={handleChange}
-      />
-      <button type="submit" disabled={loading}>
-        {loading ? "Resetting..." : "Reset Password"}
-      </button>
-    </form>
+    <div className="authPage">
+      <h2>Forgot Password</h2>
+      <form onSubmit={handleSubmit} className="authForm">
+        {error && <span className="error">{error}</span>}
+        <div className="fromGroup">
+          <label>Email</label>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Enter your account email"
+          />
+        </div>
+        <button type="submit" disabled={loading}>
+          {loading ? "Sending..." : "Send Reset Link"}
+        </button>
+      </form>
+    </div>
   );
 };
 
-export default ResetPassword;
+export default ForgotPasswordPage;
