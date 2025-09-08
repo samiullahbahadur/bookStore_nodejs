@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
-
+import dotenv from "dotenv";
+dotenv.config();
 import userRoutes from "./routes/user.route.js";
 import bookRoutes from "./routes/book.route.js";
 import cartRoutes from "./routes/cart.route.js";
@@ -13,7 +14,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(
   cors({
-    origin:process.env.FRONTEND_URL,
+    origin: process.env.FRONTEND_URL,
     // methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })

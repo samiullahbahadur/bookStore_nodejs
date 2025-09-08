@@ -1,14 +1,11 @@
-import dotenv from "dotenv";
-dotenv.config();
-
-import sendEmail from "./utils/sendEmail.js"; // adjust path if needed
+import sendEmail from "./utils/sendEmail.js";
 
 (async () => {
   try {
     await sendEmail({
       to: "your-email@gmail.com",
       subject: "Test Email",
-      text: "This is a test from BookStore backend!",
+      text: "This is a test!",
     });
     console.log("Email sent ✅");
   } catch (err) {

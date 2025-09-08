@@ -7,10 +7,13 @@ const ChangePassword = () => {
   const dispatch = useDispatch();
   const { loading, error } = useSelector((state) => state.auth);
 
-  const [formData, setFormData] = useState({
-    oldPassword: "",
-    newPassword: "",
-  });
+  const [formData, setFormData] = useState(
+    {
+      oldPassword: "",
+      newPassword: "",
+    },
+    "update"
+  );
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
