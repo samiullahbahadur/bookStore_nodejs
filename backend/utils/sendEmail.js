@@ -1,26 +1,33 @@
 import nodemailer from "nodemailer";
 
-const sendEmail = async ({ to, subject, text, html }) => {
-  // 1. Configure transporter (uses Gmail here, but you can use any SMTP service)
-  const transporter = nodemailer.createTransport({
-    service: "gmail", // or: "smtp.ethereal.email" for testing
-    auth: {
-      user: process.env.EMAIL_USER, // your email
-      pass: process.env.EMAIL_PASS, // your app password (not your real Gmail password!)
-    },
-  });
+const sendEmail = async ({ to, subject, text }) => {
+  try {
+    // 🔍 Debug: check if .env values are loaded
+    console.log("EMAIL_USER:", process.env.EMAIL_USER);
+    console.log("EMAIL_PASS:", process.env.EMAIL_PASS);
 
-  // 2. Define mail options
-  const mailOptions = {
-    from: `"My App" <${process.env.EMAIL_USER}>`,
-    to,
-    subject,
-    text,
-    html,
-  };
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
 
-  // 3. Send mail
-  await transporter.sendMail(mailOptions);
+    const mailOptions = {
+      from: `"BookStore App" <${process.env.EMAIL_USER}>`,
+      to,
+      subject,
+      text,
+    };
+
+    const info = await transporter.sendMail(mailOptions);
+    console.log("✅ Email sent:", info.response);
+    return info;
+  } catch (error) {
+    console.error("❌ Email sending error:", error);
+    throw error;
+  }
 };
 
 export default sendEmail;
