@@ -38,6 +38,8 @@ const App = () => {
         <Routes>
           {/* Public Route */}
           <Route path="/auth" element={<Auth />} />
+          <Route path="/forgot-passowrd" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
 
           {/* Protected Routes */}
 
@@ -81,7 +83,7 @@ const App = () => {
               </ProtectedRoute>
             }
           />
-          <Route
+          {/* <Route
             path="/forgot-password"
             element={
               <ProtectedRoute>
@@ -96,7 +98,7 @@ const App = () => {
                 <ResetPassword />
               </ProtectedRoute>
             }
-          />
+          /> */}
           <Route
             path="/add-book"
             element={
