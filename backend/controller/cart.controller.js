@@ -30,7 +30,6 @@ export const addToCart = async (req, res) => {
     });
 
     if (existingItem) {
-     
       // Deduct stock
       book.stock -= quantity;
       await book.save();
@@ -92,19 +91,25 @@ export const getCart = async (req, res) => {
       });
     }
 
+    console.log("Fetched carts:", JSON.stringify(carts, null, 2));
+
     // Transform data to frontend-friendly format
-    const formatted = carts.map((cart) => ({
-      cartId: cart.id,
-      userId: cart.userId,
-      userName: cart.User ? cart.User.name : "Unknown",
-      items: cart.Books.map((book) => ({
-        cartItemId: book.CartItem.id,
-        id: book.id,
-        title: book.title,
-        price: book.price,
-        quantity: book.CartItem.quantity,
-      })),
-    }));
+    const formatted = carts
+      .map((cart) => ({
+        cartId: cart.id,
+        userId: cart.userId,
+        userName: cart.User ? cart.User.name : "Unknown",
+        items: cart.Books.map((book) => ({
+          cartItemId: book.CartItem.id,
+          id: book.id,
+          title: book.title,
+          price: book.price,
+          quantity: book.CartItem.quantity,
+          stock: book.stock,
+          available: book.stock >= 0 && book.stock >= book.CartItem.quantity,
+        })),
+      }))
+      .filter((cart) => cart.items.length > 0); // ⬅️ remove empty carts
 
     res.status(200).json({ carts: formatted });
   } catch (err) {
