@@ -139,8 +139,7 @@ export const deleteUser = async (req, res) => {
 export const updateUser = async (req, res) => {
   try {
     const userId = req.params.id;
-    const { name, username, email, password } = req.body;
-    // const photo = req.file ? req.file.path : user.photo;
+    const { name, username, email } = req.body;
 
     const user = await User.findByPk(userId);
     if (!user) {
@@ -162,7 +161,7 @@ export const updateUser = async (req, res) => {
     if (name) user.name = name;
     if (username) user.username = username;
     if (email) user.email = email;
-    if (password) user.password = password;
+    // if (password) user.password = password;
 
     await user.save();
 
@@ -181,6 +180,59 @@ export const updateUser = async (req, res) => {
     });
   } catch (error) {
     console.error("Update error:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const updatePassword = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { oldPassword, newPassword } = req.body;
+
+    const user = await User.findByPk(userId);
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    const isMatch = await bcrypt.compare(oldPassword, user.password);
+    if (!isMatch)
+      return res.status(400).json({ error: "Old password is incorrect" });
+
+    user.password = newPassword; // will be hashed automatically by beforeUpdate hook
+    await user.save();
+
+    res
+      .status(200)
+      .json({ success: true, message: "Password updated successfully" });
+  } catch (error) {
+    console.error("Update password error:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// import sendEmail from "../utils/sendEmail.js"; // your email utility
+
+export const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const user = await User.findOne({ where: { email } });
+
+    if (!user) return res.status(404).json({ error: "Email not found" });
+
+    // Generate secure token
+    const resetToken = crypto.randomBytes(32).toString("hex");
+    user.token = resetToken;
+    await user.save();
+
+    // Send email with reset link
+    const resetUrl = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
+    await sendEmail({
+      to: user.email,
+      subject: "Reset your password",
+      text: `Click the link to reset your password: ${resetUrl}`,
+    });
+
+    res.status(200).json({ success: true, message: "Reset password email sent" });
+  } catch (error) {
+    console.error("Forgot password error:", error);
     res.status(500).json({ error: error.message });
   }
 };
