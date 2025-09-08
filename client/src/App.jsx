@@ -8,6 +8,8 @@ import CartPage from "./pages/carts/Cartpage";
 import Auth from "./pages/authPage/Authpage";
 import ProfilePage from "./pages/authPage/profilePage";
 import ChangePassword from "./pages/authPage/changePassword";
+import ForgotPassword from "./pages/authPage/forgotPassword";
+
 import ProtectedRoute from "./components/protectedRoute";
 import AdminRoute from "./pages/admin/AdminRoute";
 import OrdersPage from "./pages/ordersPage/OdersPage";
@@ -75,6 +77,14 @@ const App = () => {
             element={
               <ProtectedRoute>
                 <ChangePassword />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/forgot-password"
+            element={
+              <ProtectedRoute>
+                <ForgotPassword />
               </ProtectedRoute>
             }
           />
