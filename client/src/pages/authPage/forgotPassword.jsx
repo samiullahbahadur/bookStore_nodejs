@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { forgotPassword } from "./authSlice";
 import "./authPage.css";
 
-const ForgotPasswordPage = () => {
+const ForgotPassword = () => {
   const dispatch = useDispatch();
   const { loading, error } = useSelector((state) => state.auth);
 
@@ -36,4 +36,4 @@ const ForgotPasswordPage = () => {
   );
 };
 
-export default ForgotPasswordPage;
+export default ForgotPassword;

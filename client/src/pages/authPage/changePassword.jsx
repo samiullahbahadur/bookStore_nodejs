@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { changePassword } from "./authSlice";
 import "./authPage.css";
 
-const ChangePasswordPage = () => {
+const ChangePassword = () => {
   const dispatch = useDispatch();
   const { loading, error } = useSelector((state) => state.auth);
 
@@ -52,4 +52,4 @@ const ChangePasswordPage = () => {
   );
 };
 
-export default ChangePasswordPage;
+export default ChangePassword;
