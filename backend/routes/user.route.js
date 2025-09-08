@@ -41,17 +41,8 @@ router.put(
   validate,
   updateUser
 );
-router.put(
-  "/change-password",
-  authenticate,
-
-  updatePassword
-);
-router.put(
-  "/forgot-password/",
-
-  forgotPassword
-);
+router.put("/change-password", authenticate, updatePassword);
+router.post("/forgot-password", forgotPassword);
 router.put("/reset-password/:token", resetPassword);
 
 export default router;
