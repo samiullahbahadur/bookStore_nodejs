@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { forgotPassword } from "../../redux/authSlice";
+import { forgotPassword } from "./authSlice";
 import { setNotification } from "../../redux/notificationSlice";
 import { useNavigate } from "react-router-dom";
 import "./authPage.css";
