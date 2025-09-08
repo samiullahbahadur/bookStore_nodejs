@@ -127,9 +127,13 @@ export const forgotPassword = createAsyncThunk(
   "auth/forgotPassword",
   async (email, { rejectWithValue }) => {
     try {
-      const { data } = await ApiClient.post("/users/forgot-password", {
-        email,
-      });
+      const { data } = await ApiClient.post(
+        "/users/forgot-password",
+        {
+          email,
+        },
+        { withCredentials: true } // needed for credentials
+      );
 
       return data;
     } catch (err) {

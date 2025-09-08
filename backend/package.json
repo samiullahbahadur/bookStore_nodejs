@@ -5,6 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
+    "test-email": "node testEmail.js",
     "start": "nodemon server.js",
     "migrate:dev": "npx sequelize-cli db:migrate",
     "migrate:test": "cross-env NODE_ENV=test npx sequelize-cli db:migrate",

@@ -214,34 +214,48 @@ export const updatePassword = async (req, res) => {
   }
 };
 
+// Simulated DB
+const users = [
+  { id: 1, name: "Test User", email: "test@example.com", token: "" },
+];
 // import sendEmail from "../utils/sendEmail.js"; // your email utility
 
 export const forgotPassword = async (req, res) => {
   try {
     const { email } = req.body;
 
-    if (!email) return res.status(400).json({ message: "Email is required" });
+    // Validate email
+    if (!email) {
+      return res.status(400).json({ error: "Email is required" });
+    }
 
+    // Find user by email
     const user = await User.findOne({ where: { email } });
-    if (!user) return res.status(404).json({ error: "Email not found" });
+    if (!user) {
+      return res.status(404).json({ error: "Email not found" });
+    }
 
-    // Generate secure token
-    // const resetToken = crypto.randomBytes(32).toString("hex");
+    // Generate a secure reset token
     const token = generateResetToken(user);
     user.token = token;
     await user.save();
 
-    // Send email with reset link
+    // Build frontend reset URL
     const resetUrl = `${process.env.FRONTEND_URL}/reset-password/${token}`;
+
+    // Send the reset email
     await sendEmail({
       to: user.email,
-      subject: "Reset your password",
-      text: `Click the link to reset your password: ${resetUrl}`,
+      subject: "Reset Your Password",
+      text: `Hello ${
+        user.name || ""
+      },\n\nYou requested a password reset.\nClick the link below to reset your password:\n\n${resetUrl}\n\nIf you did not request this, please ignore this email.\n`,
     });
 
-    res
-      .status(200)
-      .json({ success: true, message: "Reset password email sent" });
+    res.status(200).json({
+      success: true,
+      message: "Reset password email sent successfully",
+    });
   } catch (error) {
     console.error("Forgot password error:", error);
     res.status(500).json({ error: error.message });
