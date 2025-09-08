@@ -16,6 +16,8 @@ import {
   logoutUser,
   deleteUser,
   updateUser,
+  updatePassword,
+  forgotPassword,
 } from "../controller/user.controller.js";
 
 const router = express.Router();
@@ -37,6 +39,19 @@ router.put(
   validateUpdate,
   validate,
   updateUser
+);
+router.put(
+  "/change-password",
+
+  validateUpdate,
+  validate,
+  updatePassword
+);
+router.put(
+  "/forgot-password/",
+  validateUpdate,
+  validate,
+  forgotPassword
 );
 
 export default router;

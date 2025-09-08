@@ -2,6 +2,7 @@ import db from "../models/index.js";
 import fs from "fs";
 import path from "path";
 import generateToken from "../utils/generateToken.js";
+
 import bcrypt from "bcrypt";
 const { User } = db;
 export const getUsers = async (req, res) => {
@@ -189,6 +190,10 @@ export const updatePassword = async (req, res) => {
     const userId = req.user.id;
     const { oldPassword, newPassword } = req.body;
 
+    if (!oldPassword || !newPassword) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+
     const user = await User.findByPk(userId);
     if (!user) return res.status(404).json({ error: "User not found" });
 
@@ -213,26 +218,53 @@ export const updatePassword = async (req, res) => {
 export const forgotPassword = async (req, res) => {
   try {
     const { email } = req.body;
-    const user = await User.findOne({ where: { email } });
 
+    if (!email) return res.status(400).json({ message: "Email is required" });
+
+    const user = await User.findOne({ where: { email } });
     if (!user) return res.status(404).json({ error: "Email not found" });
 
     // Generate secure token
-    const resetToken = crypto.randomBytes(32).toString("hex");
-    user.token = resetToken;
+    // const resetToken = crypto.randomBytes(32).toString("hex");
+    const token = generateToken(user);
+    user.token = token;
     await user.save();
 
     // Send email with reset link
-    const resetUrl = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
+    const resetUrl = `${process.env.FRONTEND_URL}/reset-password/${token}`;
     await sendEmail({
       to: user.email,
       subject: "Reset your password",
       text: `Click the link to reset your password: ${resetUrl}`,
     });
 
-    res.status(200).json({ success: true, message: "Reset password email sent" });
+    res
+      .status(200)
+      .json({ success: true, message: "Reset password email sent" });
   } catch (error) {
     console.error("Forgot password error:", error);
     res.status(500).json({ error: error.message });
   }
 };
+
+// export const resetPassword = async (req, res) => {
+//   try {
+//     const { token } = req.params;
+//     const { newPassword } = req.body;
+
+//     if (!newPassword) return res.status(400).json({ message: "New password is required" });
+
+//     const user = await User.findOne({ where: { token } });
+//     if (!user) return res.status(400).json({ message: "Invalid or expired token" });
+
+//     // Update password and remove token
+//     user.password = newPassword;
+//     user.token = null;
+//     await user.save();
+
+//     res.status(200).json({ message: "Password reset successfully" });
+//   } catch (err) {
+//     console.error("Reset Password Error:", err);
+//     res.status(500).json({ message: err.message });
+//   }
+// };

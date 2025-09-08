@@ -12,4 +12,12 @@ const generateToken = (user) => {
   // console.log(token);
 };
 
-export default generateToken;
+const generateResetToken = (user) => {
+  return jwt.sign(
+    { id: user.id },
+    process.env.JWT_SECRET,
+    { expiresIn: "15m" } // valid for 15 minutes only
+  );
+};
+
+export default { generateToken, generateResetToken };
