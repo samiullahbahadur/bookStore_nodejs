@@ -4,7 +4,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { resetPassword } from "./authSlice";
 import "./authPage.css";
 
-const ResetPasswordPage = () => {
+const ResetPassword = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { token } = useParams();
@@ -40,4 +40,4 @@ const ResetPasswordPage = () => {
   );
 };
 
-export default ResetPasswordPage;
+export default ResetPassword;
