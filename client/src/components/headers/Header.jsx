@@ -103,6 +103,15 @@ const Header = () => {
                       </Link>
                     </li>
                     <li>
+                      <Link
+                        to="/change-password"
+                        className="dropdown-link"
+                        onClick={() => setDropdownOpen(false)}
+                      >
+                        Password
+                      </Link>
+                    </li>
+                    <li>
                       <button className="dropdown-link" onClick={handleLogout}>
                         Logout
                       </button>

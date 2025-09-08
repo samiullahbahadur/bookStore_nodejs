@@ -18,7 +18,6 @@ const ProfilePage = () => {
       name: user?.name || "",
       username: user?.username || "",
       email: user?.email || "",
-      password: "",
       photo: null,
     },
     "update"
@@ -55,7 +54,6 @@ const ProfilePage = () => {
     dispatch(updateProfile({ id: user.id, formData: data }))
       .unwrap()
       .then((res) => {
-        console.log("Update success:", res);
         dispatch(
           setNotification({ message: "Profile updated!", type: "success" })
         );
@@ -112,7 +110,7 @@ const ProfilePage = () => {
           </div>
 
           {/* Password */}
-          <div className="formGroup">
+          {/* <div className="formGroup">
             <label>Password</label>
             <input
               type="password"
@@ -123,7 +121,7 @@ const ProfilePage = () => {
             {Errors.password && (
               <span className="error">{Errors.password}</span>
             )}
-          </div>
+          </div> */}
 
           {/* Profile Photo */}
           <div className="formGroup">
@@ -142,7 +140,7 @@ const ProfilePage = () => {
 
           {/* Buttons */}
           <div className="profileActions">
-            <button type="submit">Update Profile</button>
+            <button type="submit">Update </button>
             <Link to="/" className="btn-secondary">
               Cancel
             </Link>

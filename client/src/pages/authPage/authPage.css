@@ -108,7 +108,8 @@
 /* Update users Profile */
 
 .profilePage {
-  max-width: 720px;
+  /* max-width: fit-content; */
+  max-width: 620px;
   margin: 48px auto;
   padding: 24px;
   background: #ffffff;
@@ -132,6 +133,8 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px 16px;
+
+  height: auto;
 }
 .formGroup {
   display: flex;
@@ -194,9 +197,6 @@
   display: flex;
   justify-content: space-between;
   gap: 8px;
-  margin-top: 20px;
-  margin-bottom: 70px;
- 
 }
 /* Buttons */
 .profileActions button {

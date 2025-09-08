@@ -7,6 +7,7 @@ import HomePage from "./pages/home/HomePage";
 import CartPage from "./pages/carts/Cartpage";
 import Auth from "./pages/authPage/Authpage";
 import ProfilePage from "./pages/authPage/profilePage";
+import ChangePassword from "./pages/authPage/changePassword";
 import ProtectedRoute from "./components/protectedRoute";
 import AdminRoute from "./pages/admin/AdminRoute";
 import OrdersPage from "./pages/ordersPage/OdersPage";
@@ -66,6 +67,14 @@ const App = () => {
             element={
               <ProtectedRoute>
                 <ProfilePage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/change-password"
+            element={
+              <ProtectedRoute>
+                <ChangePassword />
               </ProtectedRoute>
             }
           />
