@@ -214,10 +214,6 @@ export const updatePassword = async (req, res) => {
   }
 };
 
-// Simulated DB
-const users = [
-  { id: 1, name: "Test User", email: "test@example.com", token: "" },
-];
 // import sendEmail from "../utils/sendEmail.js"; // your email utility
 
 export const forgotPassword = async (req, res) => {
@@ -246,10 +242,10 @@ export const forgotPassword = async (req, res) => {
     // Send the reset email
     await sendEmail({
       to: user.email,
-      subject: "Reset Your Password",
+      subject: "Reset your password",
       text: `Hello ${
         user.name || ""
-      },\n\nYou requested a password reset.\nClick the link below to reset your password:\n\n${resetUrl}\n\nIf you did not request this, please ignore this email.\n`,
+      },\n\nClick this link to reset your password:\n\n${resetUrl}\n\nIf you did not request this, ignore this email.`,
     });
 
     res.status(200).json({
