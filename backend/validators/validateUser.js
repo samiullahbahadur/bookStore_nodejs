@@ -25,8 +25,8 @@ export const validateLogin = [
 
 // Update (email/password/photo optional)
 export const validateUpdate = [
-  body("name").notEmpty().withMessage("Name is required"),
-  body("username").notEmpty().withMessage("Username is required"),
+  body("name").optional().notEmpty().withMessage("Name is required"),
+  body("username").optional().notEmpty().withMessage("Username is required"),
   body("email").optional().isEmail().withMessage("Valid email is required"),
   body("password")
     .optional()

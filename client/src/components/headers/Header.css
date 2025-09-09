@@ -133,7 +133,7 @@ form {
     border-radius: 8px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.7);
     padding: 8px 0;
-    min-width: 130px;
+    min-width: 120px;
     z-index: 1000;
     list-style: none;
   }

@@ -1,7 +1,9 @@
 import db from "../models/index.js";
 import fs from "fs";
 import path from "path";
-import generateToken from "../utils/generateToken.js";
+import { generateToken, generateResetToken } from "../utils/generateToken.js";
+import sendEmail from "../utils/sendEmail.js";
+
 import bcrypt from "bcrypt";
 const { User } = db;
 export const getUsers = async (req, res) => {
@@ -139,8 +141,7 @@ export const deleteUser = async (req, res) => {
 export const updateUser = async (req, res) => {
   try {
     const userId = req.params.id;
-    const { name, username, email, password } = req.body;
-    // const photo = req.file ? req.file.path : user.photo;
+    const { name, username, email } = req.body;
 
     const user = await User.findByPk(userId);
     if (!user) {
@@ -162,7 +163,7 @@ export const updateUser = async (req, res) => {
     if (name) user.name = name;
     if (username) user.username = username;
     if (email) user.email = email;
-    if (password) user.password = password;
+    // if (password) user.password = password;
 
     await user.save();
 
@@ -182,5 +183,101 @@ export const updateUser = async (req, res) => {
   } catch (error) {
     console.error("Update error:", error);
     res.status(500).json({ error: error.message });
+  }
+};
+
+export const updatePassword = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { oldPassword, newPassword } = req.body;
+
+    if (!oldPassword || !newPassword) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+
+    const user = await User.findByPk(userId);
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    const isMatch = await bcrypt.compare(oldPassword, user.password);
+    if (!isMatch)
+      return res.status(400).json({ error: "Old password is incorrect" });
+
+    user.password = newPassword; // will be hashed automatically by beforeUpdate hook
+    await user.save();
+
+    res
+      .status(200)
+      .json({ success: true, message: "Password updated successfully" });
+  } catch (error) {
+    console.error("Update password error:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// import sendEmail from "../utils/sendEmail.js"; // your email utility
+export const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ error: "Email is required" });
+    }
+
+    const user = await User.findOne({ where: { email } });
+    if (!user) {
+      return res.status(404).json({ error: "Email not found" });
+    }
+
+    const token = generateResetToken(user);
+    user.token = token;
+    await user.save();
+
+    const resetUrl = `${process.env.FRONTEND_URL}/reset-password/${token}`;
+
+    // ✅ Try sending email and throw if it fails
+    await sendEmail({
+      to: user.email,
+      subject: "Reset your password",
+      text: `Hello ${
+        user.name || ""
+      },\n\nClick this link to reset your password:\n\n${resetUrl}\n\nIf you did not request this, ignore this email.`,
+    });
+
+    // Only return success if email is actually sent
+    res.status(200).json({
+      success: true,
+      message: "Reset password email sent successfully",
+    });
+  } catch (error) {
+    console.error("Forgot password error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to send reset email. Check your email configuration.",
+      error: error.message,
+    });
+  }
+};
+
+export const resetPassword = async (req, res) => {
+  try {
+    const { token } = req.params;
+    const { newPassword } = req.body;
+
+    if (!newPassword)
+      return res.status(400).json({ message: "New password is required" });
+
+    const user = await User.findOne({ where: { token } });
+    if (!user)
+      return res.status(400).json({ message: "Invalid or expired token" });
+
+    // Update password and remove token
+    user.password = newPassword;
+    user.token = null;
+    await user.save();
+
+    res.status(200).json({ message: "Password reset successfully" });
+  } catch (err) {
+    console.error("Reset Password Error:", err);
+    res.status(500).json({ message: err.message });
   }
 };

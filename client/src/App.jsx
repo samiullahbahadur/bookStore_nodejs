@@ -7,6 +7,10 @@ import HomePage from "./pages/home/HomePage";
 import CartPage from "./pages/carts/Cartpage";
 import Auth from "./pages/authPage/Authpage";
 import ProfilePage from "./pages/authPage/profilePage";
+import ChangePassword from "./pages/authPage/changePassword";
+import ForgotPassword from "./pages/authPage/forgotPassword";
+import ResetPassword from "./pages/authPage/resetPassword";
+
 import ProtectedRoute from "./components/protectedRoute";
 import AdminRoute from "./pages/admin/AdminRoute";
 import OrdersPage from "./pages/ordersPage/OdersPage";
@@ -34,6 +38,8 @@ const App = () => {
         <Routes>
           {/* Public Route */}
           <Route path="/auth" element={<Auth />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password/:token" element={<ResetPassword />} />
 
           {/* Protected Routes */}
 
@@ -69,6 +75,30 @@ const App = () => {
               </ProtectedRoute>
             }
           />
+          <Route
+            path="/change-password"
+            element={
+              <ProtectedRoute>
+                <ChangePassword />
+              </ProtectedRoute>
+            }
+          />
+          {/* <Route
+            path="/forgot-password"
+            element={
+              <ProtectedRoute>
+                <ForgotPassword />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/reset-password"
+            element={
+              <ProtectedRoute>
+                <ResetPassword />
+              </ProtectedRoute>
+            }
+          /> */}
           <Route
             path="/add-book"
             element={

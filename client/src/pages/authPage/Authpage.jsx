@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
+
 import { useDispatch, useSelector } from "react-redux";
-import { toast } from "react-toastify";
+
 import { loginUser, registerUser } from "./authSlice";
 import useAuthForm from "../../hooks/useAuthForm";
 
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import "./authPage.css";
 import { setNotification } from "../../redux/notificationSlice";
 
@@ -144,6 +145,9 @@ const AuthPage = () => {
               </>
             )}
           </p>
+        </div>
+        <div className="forgot-link">
+          {!isRegister && <Link to="/forgot-password">Forgot Password?</Link>}
         </div>
       </form>
     </div>
