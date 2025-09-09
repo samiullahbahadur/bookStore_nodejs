@@ -35,7 +35,7 @@ const ForgotPassword = () => {
   };
 
   return (
-    <div className="authPage">
+    <div className="authPage-forgot">
       <h2>Forgot Password</h2>
       <form className="authForm" onSubmit={handleSubmit}>
         <div className="fromGroup">
@@ -50,10 +50,11 @@ const ForgotPassword = () => {
             required
           />
         </div>
-
-        <button type="submit" disabled={loading}>
-          {loading ? "Sending..." : "Send Reset Email"}
-        </button>
+        <div className="forgot-password-actions">
+          <button type="submit" disabled={loading}>
+            {loading ? "Sending..." : "Send Reset Email"}
+          </button>
+        </div>
       </form>
     </div>
   );

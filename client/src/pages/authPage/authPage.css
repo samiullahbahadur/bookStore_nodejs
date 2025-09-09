@@ -1,5 +1,5 @@
 .authPage {
-  max-width: 580px;
+  max-width: 620px;
   margin: 48px auto;
   padding: 24px;
   background: #ffffff;
@@ -73,7 +73,7 @@
   box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
 }
 .profileActions_auth {
-  margin-top: 1em;
+  margin-top: 1rem;
   display: flex;
   justify-content: space-between;
   gap: 0.8rem;
@@ -245,6 +245,61 @@
 }
 
 .btn-secondary:hover {
+  background: #354056;
+  color: #fff; /* indigo-500 */
+}
+
+/* change Password */
+
+.change-password-actions {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+.change-actions {
+  border-radius: 15px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  padding: 12px 18px;
+  cursor: pointer;
+  background: #e5e7eb;
+  color: #111827;
+  border: none;
+  margin-top: 12px;
+}
+.change-actions:hover {
+  background: #354056;
+  color: #fff; /* indigo-500 */
+}
+/* Forgot Password */
+
+.authPage-forgot {
+  max-width: 520px;
+  margin: 48px auto;
+  padding: 24px;
+  background: #ffffff;
+  border: 1px solid #e9ecef;
+  border-radius: 16px;
+  box-shadow: 0 6px 24px rgba(16, 24, 40, 0.6);
+}
+.authPage-forgot h2 {
+  text-align: center;
+}
+.forgot-password-actions {
+  display: grid;
+  grid-template-columns: 1fr;
+  margin-top: 22px;
+}
+.forgot-password-actions button {
+  border-radius: 15px;
+  font-weight: 600;
+  padding: 14px 22px;
+  cursor: pointer;
+  background: #e5e7eb;
+  color: #111827;
+  border: none;
+}
+.forgot-password-actions :hover {
   background: #354056;
   color: #fff; /* indigo-500 */
 }

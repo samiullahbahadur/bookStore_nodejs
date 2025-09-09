@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { changePassword } from "./authSlice";
 import Header from "../../components/headers/Header";
 import { setNotification } from "../../redux/notificationSlice";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./authPage.css";
 import useChangePasswordForm from "../../hooks/changePasswordForm"; // ✅ our new hook
 
@@ -81,10 +81,15 @@ const ChangePassword = () => {
               <span className="error">{errors.confirmPassword}</span>
             )}
           </div>
-
-          <button type="submit" disabled={loading}>
-            {loading ? "Updating..." : "Update Password"}
-          </button>
+          <div className="change-password-actions">
+            <button type="submit" className="change-actions" disabled={loading}>
+              {loading ? "Updating..." : "Update "}
+            </button>
+            <Link to="/" className="change-actions">
+              {" "}
+              Cancel
+            </Link>
+          </div>
         </form>
       </div>
     </>
