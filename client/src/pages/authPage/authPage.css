@@ -303,3 +303,35 @@
   background: #354056;
   color: #fff; /* indigo-500 */
 }
+/* Reset Password */
+
+.authPage-reset {
+  max-width: 520px;
+  margin: 48px auto;
+  padding: 24px;
+  background: #ffffff;
+  border: 1px solid #e9ecef;
+  border-radius: 16px;
+  box-shadow: 0 6px 24px rgba(16, 24, 40, 0.6);
+}
+.authPage-reset h2 {
+  text-align: center;
+}
+.res-password-actions {
+  display: grid;
+  grid-template-columns: 1fr;
+  margin-top: 22px;
+}
+.res-password-actions button {
+  border-radius: 15px;
+  font-weight: 600;
+  padding: 14px 22px;
+  cursor: pointer;
+  background: #e5e7eb;
+  color: #111827;
+  border: none;
+}
+.res-password-actions :hover {
+  background: #354056;
+  color: #fff; /* indigo-500 */
+}

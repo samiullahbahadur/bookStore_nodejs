@@ -48,7 +48,7 @@ const ResetPassword = () => {
   };
 
   return (
-    <div className="authPage">
+    <div className="authPage-reset">
       <h2>Reset Password</h2>
       <form onSubmit={handleSubmit} className="authForm">
         <div className="formGroup">
@@ -78,10 +78,11 @@ const ResetPassword = () => {
             <span className="error">{errors.confirmPassword}</span>
           )}
         </div>
-
-        <button type="submit" disabled={loading}>
-          {loading ? "Resetting..." : "Reset Password"}
-        </button>
+        <div className="res-password-actions">
+          <button type="submit" disabled={loading}>
+            {loading ? "Resetting..." : "Reset Password"}
+          </button>
+        </div>
       </form>
     </div>
   );
