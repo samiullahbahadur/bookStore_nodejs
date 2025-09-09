@@ -8,8 +8,7 @@ import sendEmail from "./utils/sendEmail.js";
       subject: "Test Email",
       text: "Hello! This is a test email.",
     });
-    console.log("✅ Email sent successfully!");
   } catch (err) {
-    console.error("❌ Failed to send email:", err);
+    console.error("❌ Email send failed:", err);
   }
 })();

@@ -215,31 +215,26 @@ export const updatePassword = async (req, res) => {
 };
 
 // import sendEmail from "../utils/sendEmail.js"; // your email utility
-
 export const forgotPassword = async (req, res) => {
   try {
     const { email } = req.body;
 
-    // Validate email
     if (!email) {
       return res.status(400).json({ error: "Email is required" });
     }
 
-    // Find user by email
     const user = await User.findOne({ where: { email } });
     if (!user) {
       return res.status(404).json({ error: "Email not found" });
     }
 
-    // Generate a secure reset token
     const token = generateResetToken(user);
     user.token = token;
     await user.save();
 
-    // Build frontend reset URL
     const resetUrl = `${process.env.FRONTEND_URL}/reset-password/${token}`;
 
-    // Send the reset email
+    // ✅ Try sending email and throw if it fails
     await sendEmail({
       to: user.email,
       subject: "Reset your password",
@@ -248,13 +243,18 @@ export const forgotPassword = async (req, res) => {
       },\n\nClick this link to reset your password:\n\n${resetUrl}\n\nIf you did not request this, ignore this email.`,
     });
 
+    // Only return success if email is actually sent
     res.status(200).json({
       success: true,
       message: "Reset password email sent successfully",
     });
   } catch (error) {
     console.error("Forgot password error:", error);
-    res.status(500).json({ error: error.message });
+    res.status(500).json({
+      success: false,
+      message: "Failed to send reset email. Check your email configuration.",
+      error: error.message,
+    });
   }
 };
 
