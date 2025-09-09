@@ -1,28 +1,41 @@
-export const validateChangePassword = (formData) => {
-  let errors = {};
+import { useState } from "react";
 
-  if (!formData.oldPassword) {
-    errors.oldPassword = "Current password is required";
-  }
+export default function useChangePasswordForm(initialValues) {
+  const [formData, setFormData] = useState(initialValues);
+  const [errors, setErrors] = useState({});
 
-  if (!formData.newPassword) {
-    errors.newPassword = "New password is required";
-  } else {
-    // must match backend regex: at least 8 chars, 1 letter, 1 number, 1 special
-    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/;
-    if (!passwordRegex.test(formData.newPassword)) {
-      errors.newPassword =
+  const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/;
+
+  const validate = () => {
+    let tempErrors = {};
+
+    if (!formData.oldPassword)
+      tempErrors.oldPassword = "Current password is required";
+
+    if (!formData.newPassword) {
+      tempErrors.newPassword = "New password is required";
+    } else if (!passwordRegex.test(formData.newPassword)) {
+      tempErrors.newPassword =
         "Password must be at least 8 characters, include a letter, number, and special symbol";
     }
-  }
 
-  if (!formData.confirmPassword) {
-    errors.confirmPassword = "Confirm your new password";
-  } else if (formData.newPassword !== formData.confirmPassword) {
-    errors.confirmPassword = "Passwords do not match";
-  }
+    if (!formData.confirmPassword) {
+      tempErrors.confirmPassword = "Confirm your new password";
+    } else if (formData.newPassword !== formData.confirmPassword) {
+      tempErrors.confirmPassword = "Passwords do not match";
+    }
 
-  return errors;
-};
+    setErrors(tempErrors);
+    return Object.keys(tempErrors).length === 0;
+  };
 
-export default validateChangePassword;
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+
+    // clear error on change
+    if (errors[name]) setErrors({ ...errors, [name]: "" });
+  };
+
+  return { formData, errors, handleChange, validate };
+}

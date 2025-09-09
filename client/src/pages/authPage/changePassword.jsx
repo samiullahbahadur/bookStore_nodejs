@@ -1,41 +1,26 @@
-import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { changePassword } from "./authSlice";
 import Header from "../../components/headers/Header";
 import { setNotification } from "../../redux/notificationSlice";
-import "./authPage.css";
 import { useNavigate } from "react-router-dom";
-import validateChangePassword from "../../hooks/changePasswordForm"; // ✅ import your validator
+import "./authPage.css";
+import useChangePasswordForm from "../../hooks/changePasswordForm"; // ✅ our new hook
 
 const ChangePassword = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { loading, error } = useSelector((state) => state.auth);
 
-  const [formData, setFormData] = useState({
+  const { formData, errors, handleChange, validate } = useChangePasswordForm({
     oldPassword: "",
     newPassword: "",
     confirmPassword: "",
   });
-  const [errors, setErrors] = useState({});
-
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-
-    // clear error as user types
-    if (errors[e.target.name]) {
-      setErrors({ ...errors, [e.target.name]: "" });
-    }
-  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const validationErrors = validateChangePassword(formData);
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
-      return;
-    }
+    if (!validate()) return; // errors handled in hook
 
     dispatch(changePassword(formData))
       .unwrap()
