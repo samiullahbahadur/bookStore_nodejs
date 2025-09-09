@@ -1,6 +1,8 @@
 import { useState } from "react";
-
-export default function useChangePasswordForm(initialValues) {
+export default function useChangePasswordForm(
+  initialValues,
+  requireOldPassword = true
+) {
   const [formData, setFormData] = useState(initialValues);
   const [errors, setErrors] = useState({});
 
@@ -9,8 +11,9 @@ export default function useChangePasswordForm(initialValues) {
   const validate = () => {
     let tempErrors = {};
 
-    if (!formData.oldPassword)
+    if (requireOldPassword && !formData.oldPassword) {
       tempErrors.oldPassword = "Current password is required";
+    }
 
     if (!formData.newPassword) {
       tempErrors.newPassword = "New password is required";
@@ -33,7 +36,6 @@ export default function useChangePasswordForm(initialValues) {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
 
-    // clear error on change
     if (errors[name]) setErrors({ ...errors, [name]: "" });
   };
 

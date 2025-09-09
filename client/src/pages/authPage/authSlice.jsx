@@ -127,7 +127,7 @@ export const forgotPassword = createAsyncThunk(
   "auth/forgotPassword",
   async (email, { rejectWithValue }) => {
     try {
-      const { data } = await ApiClient.post(
+      const { data } = await ApiClient.put(
         "/users/forgot-password",
         {
           email,
@@ -146,14 +146,22 @@ export const forgotPassword = createAsyncThunk(
 export const resetPassword = createAsyncThunk(
   "auth/resetPassword",
   async ({ token, newPassword }, { rejectWithValue }) => {
+    console.log("🔹 Thunk called with token:", token, "password:", newPassword);
     try {
       const { data } = await ApiClient.put(`/users/reset-password/${token}`, {
         newPassword,
       });
 
-      return data;
+      return data; // ✅ this gets passed to .fulfilled
     } catch (err) {
-      return rejectWithValue(err.response?.data?.error || err.message);
+      const message =
+        err.response?.data?.error ||
+        err.response?.data?.message ||
+        err.message ||
+        "Failed to reset password";
+
+      console.error("❌ API error:", message);
+      return rejectWithValue(message);
     }
   }
 );
@@ -173,6 +181,7 @@ const authSlice = createSlice({
     loading: false,
     error: null,
     currentUser: null,
+    resetSuccess: null,
   },
   reducers: {
     logout: (state) => {
@@ -180,6 +189,10 @@ const authSlice = createSlice({
       state.token = null;
       localStorage.removeItem("token");
       localStorage.removeItem("user");
+    },
+    clearAuthMessages: (state) => {
+      state.error = null;
+      state.resetSuccess = null;
     },
   },
   extraReducers: (builder) => {
@@ -265,16 +278,21 @@ const authSlice = createSlice({
       .addCase(resetPassword.pending, (state) => {
         state.loading = true;
         state.error = null;
+        state.resetSuccess = null;
       })
-      .addCase(resetPassword.fulfilled, (state) => {
+      .addCase(resetPassword.fulfilled, (state, action) => {
         state.loading = false;
+        state.error = null;
+        state.resetSuccess =
+          action.payload?.message || "Password reset successful";
       })
       .addCase(resetPassword.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload;
+        state.error = action.payload || "Reset failed";
+        state.resetSuccess = null;
       });
   },
 });
 
-export const { logout } = authSlice.actions;
+export const { logout, clearAuthMessages } = authSlice.actions;
 export default authSlice.reducer;
