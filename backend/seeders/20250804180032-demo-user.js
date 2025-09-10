@@ -24,7 +24,7 @@
 //   }
 // };
 
-import bcrypt from "bcryptjs";
+import bcrypt from "bcrypt";
 export default {
   up: (queryInterface, Sequelize) => {
     const hashedPassword = bcrypt.hash("admin", 10);
