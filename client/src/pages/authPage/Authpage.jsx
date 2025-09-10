@@ -76,6 +76,7 @@ const AuthPage = () => {
                 type="text"
                 name="name"
                 id="name"
+                placeholder=" Name"
                 value={formData.name}
                 onChange={handleChange}
               />
@@ -88,7 +89,7 @@ const AuthPage = () => {
                 type="text"
                 name="username"
                 id="username"
-                placeholder="name"
+                placeholder="User name"
                 value={formData.uername}
                 onChange={handleChange}
               />

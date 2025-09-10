@@ -1,6 +1,6 @@
 .authPage {
-  max-width: 620px;
-  margin: 48px auto;
+  max-width: 520px;
+  margin: 150px auto;
   padding: 24px;
   background: #ffffff;
   border: 1px solid #e9ecef;
@@ -128,7 +128,7 @@
 .profilePage {
   /* max-width: fit-content; */
   max-width: 620px;
-  margin: 48px auto;
+  margin: 110px auto;
   padding: 24px;
   background: #ffffff;
   border: 1px solid #e9ecef;
@@ -275,7 +275,7 @@
 
 .authPage-forgot {
   max-width: 520px;
-  margin: 48px auto;
+  margin: 150px auto;
   padding: 24px;
   background: #ffffff;
   border: 1px solid #e9ecef;
@@ -307,7 +307,7 @@
 
 .authPage-reset {
   max-width: 520px;
-  margin: 48px auto;
+  margin: 150px auto;
   padding: 24px;
   background: #ffffff;
   border: 1px solid #e9ecef;
