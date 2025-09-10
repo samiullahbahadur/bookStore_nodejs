@@ -25,19 +25,19 @@
 // };
 export default {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.bulkInsert('Users', [
+    return queryInterface.bulkInsert("Users", [
       {
-       name: 'John',
-        username: 'Doe',
-        email: 'example@example.com',
-        password:"hashed_password_here",
+        name: "Ahmad",
+        username: "Ahmadi",
+        email: "ahmad@gmail.com",
+        password: "admin@123",
+        isAdmin: true,
         createdAt: new Date(),
         updatedAt: new Date(),
       },
     ]);
   },
   down: (queryInterface, Sequelize) => {
-    return queryInterface.bulkDelete('Users', null, {});
+    return queryInterface.bulkDelete("Users", null, {});
   },
 };
-
