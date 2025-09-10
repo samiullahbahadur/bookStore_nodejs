@@ -23,14 +23,17 @@
 //      */
 //   }
 // };
+
+import bcrypt from "bcryptjs";
 export default {
   up: (queryInterface, Sequelize) => {
+    const hashedPassword = bcrypt.hash("admin", 10);
     return queryInterface.bulkInsert("Users", [
       {
         name: "Ahmad",
         username: "Ahmadi",
         email: "ahmad@gmail.com",
-        password: "admin@123",
+        password: hashedPassword,
         isAdmin: true,
         createdAt: new Date(),
         updatedAt: new Date(),
