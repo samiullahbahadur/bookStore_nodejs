@@ -1,6 +1,7 @@
 import app from "./index.js";
 import dotenv from "dotenv";
 dotenv.config();
+
 const PORT = process.env.PORT || 5000;
 app.get("/ping", (req, res) => res.json({ success: true, message: "pong" }));
 app.listen(PORT, () => {
