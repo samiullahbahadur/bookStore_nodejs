@@ -9,14 +9,31 @@ import orderRoutes from "./routes/order.route.js";
 import invoiceRoutes from "./routes/invoice.router.js";
 
 export const app = express();
+const allowedOrigins = [
+  "https://bookstore-mu-coral.vercel.app", // production frontend
+  "http://localhost:5173", // local dev frontend
+];
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+// app.use(
+//   cors({
+//     origin: process.env.FRONTEND_URL,
+//     // methods: ["GET", "POST", "PUT", "DELETE"],
+//     credentials: true,
+//   })
+// );
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL,
-    // methods: ["GET", "POST", "PUT", "DELETE"],
-    credentials: true,
+    origin: function (origin, callback) {
+      // allow requests with no origin (like Postman)
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true, // allow cookies/sessions
   })
 );
 
