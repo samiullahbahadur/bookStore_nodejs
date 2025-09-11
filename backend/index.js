@@ -42,14 +42,14 @@ app.use("/uploads", express.static("uploads"));
 //   res.json({ success: true, data: booksWithFullUrls });
 // });
 
-// app.use((err, req, res, next) => {
-//   if (err instanceof multer.MulterError) {
-//     return res.status(400).json({ message: err.message });
-//   } else if (err) {
-//     return res.status(400).json({ message: err.message });
-//   }
-//   next();
-// });
+app.use((err, req, res, next) => {
+  if (err instanceof multer.MulterError) {
+    return res.status(400).json({ message: err.message });
+  } else if (err) {
+    return res.status(400).json({ message: err.message });
+  }
+  next();
+});
 
 app.use("/users", userRoutes);
 app.use("/books", bookRoutes);
