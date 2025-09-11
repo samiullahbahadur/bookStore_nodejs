@@ -30,7 +30,7 @@ export const getBookById = async (req, res) => {
 export const creatBooks = async (req, res) => {
   try {
     const { title, description, price, author, stock } = req.body;
-    const photo = req.file ? req.file.path : null;
+    const photo = req.file ? req.file.filename : null;
     const userId = req.user.id;
     const newBook = await Book.create({
       title,

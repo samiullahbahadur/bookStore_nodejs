@@ -57,7 +57,8 @@ export const HomePage = () => {
   };
 
   const getPhotoUrl = (photo) => {
-    if (!photo) return "/placeholder.png"; // fallback image
+    if (!photo)
+      return "https://bookstore-nodejs-74il.onrender.com/placeholder.png";
     // remove any leading "uploads/" from the db value
     const fileName = photo.replace(/^uploads[\\/]/, "");
     return `https://bookstore-nodejs-74il.onrender.com/uploads/${fileName}?t=${Date.now()}`;
