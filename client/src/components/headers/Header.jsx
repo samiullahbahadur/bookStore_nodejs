@@ -34,10 +34,11 @@ const Header = () => {
     navigate("/auth");
   };
   const getPhotoUrl = (photo) => {
-    if (!photo) return "/placeholder.png"; // fallback image
+    if (!photo)
+      return "https://bookstore-nodejs-74il.onrender.com/placeholder.png";
     // remove any leading "uploads/" from the db value
     const fileName = photo.replace(/^uploads[\\/]/, "");
-    return `http://localhost:5000/uploads/${fileName}?t=${Date.now()}`;
+    return `https://bookstore-nodejs-74il.onrender.com/uploads/${fileName}?t=${Date.now()}`;
   };
 
   return (
@@ -83,9 +84,11 @@ const Header = () => {
                   <span className="dropdown-icon">▼</span>
                   &nbsp; &nbsp;
                   <img
-                    src={
-                      user?.photo ? getPhotoUrl(user.photo) : "/placeholder.png"
-                    }
+                    // src={
+                    //   user?.photo ? getPhotoUrl(user.photo) : "/placeholder.png"
+                    // }
+                    // alt={user?.name}
+                    src={getPhotoUrl(user?.photo)}
                     alt={user?.name}
                     className="user-photo"
                   />
