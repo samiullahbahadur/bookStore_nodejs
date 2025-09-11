@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export const apiClient = axios.create({
-  baseURL: "https://bookstore-nodejs-74il.onrender.com", // remove the space at start and optional trailing slash
+  baseURL: "https://bookstore-nodejs-74il.onrender.com",
   withCredentials: true,
   headers: {
     "Content-Type": "application/json",
