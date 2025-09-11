@@ -20,12 +20,9 @@ app.use(express.urlencoded({ extended: true }));
 //   })
 // );
 
-
-import cors from "cors";
-
 const allowedOrigins = [
   "https://bookstore-mu-coral.vercel.app", // production frontend
-  "http://localhost:5173",                  // local dev frontend
+  "http://localhost:5173", // local dev frontend
 ];
 
 app.use(
@@ -44,10 +41,9 @@ app.use(
     },
     credentials: true, // allow cookies/sessions
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], // explicitly allow methods
-    allowedHeaders: ["Content-Type", "Authorization"],   // explicitly allow headers
+    allowedHeaders: ["Content-Type", "Authorization"], // explicitly allow headers
   })
 );
-
 
 app.use("/uploads", express.static("uploads"));
 
