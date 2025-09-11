@@ -17,7 +17,7 @@ This is a Node.js project for managing a online bookstore.
 ## Built With
 
 - React (rsbuild)
-- Redux (redux-query)
+- Redux (redux-tookit)
 - CSS3
 - Express
 - Sequelize
