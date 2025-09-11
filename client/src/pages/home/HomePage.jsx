@@ -60,7 +60,7 @@ export const HomePage = () => {
     if (!photo) return "/placeholder.png"; // fallback image
     // remove any leading "uploads/" from the db value
     const fileName = photo.replace(/^uploads[\\/]/, "");
-    return `http://localhost:5000/uploads/${fileName}?t=${Date.now()}`;
+    return `https://bookstore-nodejs-74il.onrender.com/uploads/${fileName}?t=${Date.now()}`;
   };
   return (
     <div>
