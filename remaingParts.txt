@@ -116,11 +116,7 @@ Order summary before placing order.
 
 4. Payments
 
-Integration with payment gateways (Stripe, PayPal, local gateway).
 
-Option for Cash on Delivery (COD).
-
-Secure payment flow + backend webhook for success/failure.
 
 ⭐ 6. Reviews & Ratings
 
