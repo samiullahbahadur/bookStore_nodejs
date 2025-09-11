@@ -1,19 +1,11 @@
 import express from "express";
 import cors from "cors";
-import path from "path";
-// import { fileURLToPath } from "url";
-import dotenv from "dotenv";
-dotenv.config();
-import db from "./models/index.js";
-const { Book } = db;
+
 import userRoutes from "./routes/user.route.js";
 import bookRoutes from "./routes/book.route.js";
 import cartRoutes from "./routes/cart.route.js";
 import orderRoutes from "./routes/order.route.js";
 import invoiceRoutes from "./routes/invoice.router.js";
-
-// const __filename = fileURLToPath(import.meta.url);
-// const __dirname = path.dirname(__filename);
 
 export const app = express();
 
@@ -28,19 +20,6 @@ app.use(
 );
 
 app.use("/uploads", express.static("uploads"));
-
-
-// app.use("/uploads", express.static(path.join(__dirname, "uploads")));
-// app.get("/books", async (req, res) => {
-//   const books = await Book.findAll(); // Sequelize query
-//   const booksWithFullUrls = books.map((book) => ({
-//     ...book.toJSON(),
-//     photo: book.photo
-//       ? `${process.env.BACKEND_URL}/uploads/${book.photo}`
-//       : "https://via.placeholder.com/150", // fallback placeholder
-//   }));
-//   res.json({ success: true, data: booksWithFullUrls });
-// });
 
 app.use((err, req, res, next) => {
   if (err instanceof multer.MulterError) {

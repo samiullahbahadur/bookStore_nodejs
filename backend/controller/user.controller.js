@@ -24,7 +24,7 @@ export const getUsers = async (req, res) => {
 export const createUser = async (req, res) => {
   try {
     const { name, username, email, password } = req.body;
-    const photo = req.file ? req.file.path : null;
+    const photo = req.file ? req.file.filename : null;
 
     const existingUser = await User.findOne({ where: { email } });
     if (existingUser) {
