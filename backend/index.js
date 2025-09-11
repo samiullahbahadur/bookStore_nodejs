@@ -9,10 +9,6 @@ import orderRoutes from "./routes/order.route.js";
 import invoiceRoutes from "./routes/invoice.router.js";
 
 export const app = express();
-const allowedOrigins = [
-  "https://bookstore-mu-coral.vercel.app", // production frontend
-  "http://localhost:5173", // local dev frontend
-];
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -23,19 +19,35 @@ app.use(express.urlencoded({ extended: true }));
 //     credentials: true,
 //   })
 // );
+
+
+import cors from "cors";
+
+const allowedOrigins = [
+  "https://bookstore-mu-coral.vercel.app", // production frontend
+  "http://localhost:5173",                  // local dev frontend
+];
+
 app.use(
   cors({
-    origin: function (origin, callback) {
-      // allow requests with no origin (like Postman)
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
+    origin: (origin, callback) => {
+      // allow requests with no origin (e.g., Postman, curl)
+      if (!origin) return callback(null, true);
+
+      // check if the origin is in the allowed list
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
       }
+
+      // reject other origins
+      return callback(new Error(`CORS policy: ${origin} not allowed`));
     },
     credentials: true, // allow cookies/sessions
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], // explicitly allow methods
+    allowedHeaders: ["Content-Type", "Authorization"],   // explicitly allow headers
   })
 );
+
 
 app.use("/uploads", express.static("uploads"));
 
