@@ -35,10 +35,10 @@ const Header = () => {
   };
   const getPhotoUrl = (photo) => {
     if (!photo)
-      return "https://bookstore-nodejs-74il.onrender.com/placeholder.png";
+      return "https://bookstore-nodejs-y9i7.onrender.com/placeholder.png";
     // remove any leading "uploads/" from the db value
     const fileName = photo.replace(/^uploads[\\/]/, "");
-    return `https://bookstore-nodejs-74il.onrender.com/uploads/${fileName}?t=${Date.now()}`;
+    return `https://bookstore-nodejs-y9i7.onrender.com/uploads/${fileName}?t=${Date.now()}`;
   };
 
   return (
