@@ -30,10 +30,9 @@ export default (sequelize, DataTypes) => {
         defaultValue: "COD", // Cash on Delivery by default
       },
       paymentStatus: {
-        type: DataTypes.STRING,
+        type: DataTypes.ENUM("pending", "unpaid", "paid"),
         allowNull: false,
-        defaultValue: ("pendign", "unpaid", "unpaid"),
-        field: "paymentstatus", // 👈 map to DB column
+        defaultValue: "pending",
       },
     },
 
