@@ -1,5 +1,7 @@
 import express from "express";
 import cors from "cors";
+import path from "path";
+import { fileURLToPath } from "url";
 
 import userRoutes from "./routes/user.route.js";
 import bookRoutes from "./routes/book.route.js";
@@ -19,7 +21,10 @@ app.use(
   })
 );
 
-app.use("/uploads", express.static("uploads"));
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
+// app.use("/uploads", express.static("uploads"));
 
 app.use((err, req, res, next) => {
   if (err instanceof multer.MulterError) {
