@@ -30,7 +30,7 @@ export default {
       paymentStatus: {
         type: Sequelize.STRING,
         allowNull: false,
-        defaultValue: "pending",
+        defaultValue: ("pending", "unpaid", "paid"),
       },
       createdAt: {
         type: Sequelize.DATE,

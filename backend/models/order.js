@@ -32,7 +32,7 @@ export default (sequelize, DataTypes) => {
       paymentStatus: {
         type: DataTypes.STRING,
         allowNull: false,
-        defaultValue: "unpaid",
+        defaultValue: ("pendign", "unpaid", "unpaid"),
         field: "paymentstatus", // 👈 map to DB column
       },
     },
