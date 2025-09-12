@@ -11,7 +11,7 @@ export const sendEmail = async ({ to, subject, text }) => {
     });
 
     await transporter.sendMail({
-      from: `"BookStore App" <${process.env.EMAIL_USER}>`,
+      from: `"BookStore " <${process.env.EMAIL_USER}>`,
       to,
       subject,
       text,

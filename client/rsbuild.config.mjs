@@ -4,7 +4,7 @@ import { pluginReact } from "@rsbuild/plugin-react";
 export default defineConfig({
   plugins: [pluginReact()],
   html: {
-    title: "My BookStore App",
+    title: " BookStore ",
     favicon: "",
     meta: [
       {
