@@ -29,8 +29,8 @@ route.post(
 route.put(
   "/:id",
   authenticate,
-  isAdmin,
-  upload.single("image"),
+  // isAdmin,
+  upload.single("photo"),
   validateBook("update"),
   validate,
   updateBook
